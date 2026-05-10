@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star } from "lucide-react";
 import { services } from "@/lib/services";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -121,6 +127,68 @@ function Index() {
               </figcaption>
             </figure>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-secondary/40 py-16 md:py-20">
+        <div className="mx-auto max-w-3xl px-4">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Frequently asked questions</h2>
+          <p className="mt-2 text-muted-foreground">
+            The quick answers to what most people ask before booking.
+          </p>
+          <Accordion type="single" collapsible className="mt-8 w-full">
+            <AccordionItem value="hours">
+              <AccordionTrigger>What are your availability hours?</AccordionTrigger>
+              <AccordionContent>
+                We work Monday to Saturday, 8am–6pm, with evening slots available
+                on request. Sunday jobs can be arranged for emergencies (leaks,
+                lock-outs, urgent removals) at a small out-of-hours rate.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="turnaround">
+              <AccordionTrigger>How quickly can you get the job done?</AccordionTrigger>
+              <AccordionContent>
+                Most quotes go back within a few hours. Small jobs (handyman,
+                plumbing fixes, man with van) usually fit in the same week —
+                often within 48 hours. Larger work like full house removals,
+                room repaints or carpet fits is typically booked 1–2 weeks
+                ahead, depending on the season.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="area">
+              <AccordionTrigger>What area do you cover?</AccordionTrigger>
+              <AccordionContent>
+                We cover the local town and surrounding villages within roughly
+                a 20-mile radius. House removals and man-with-van jobs can go
+                further afield — just let us know the pickup and drop-off
+                postcodes and we'll quote for travel.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="quote-info">
+              <AccordionTrigger>What should I include in a quote request?</AccordionTrigger>
+              <AccordionContent>
+                The more detail you can share, the more accurate the quote.
+                Helpful things to include:
+                <ul className="mt-3 list-disc space-y-1.5 pl-5">
+                  <li>Which service you need (or a short description of the job)</li>
+                  <li>Your postcode or rough location</li>
+                  <li>Rough size or scope (e.g. "two bedrooms", "small front lawn", "3-bed end-of-tenancy")</li>
+                  <li>Preferred dates or how soon you need it done</li>
+                  <li>A couple of photos if it helps show the work</li>
+                  <li>Access notes — parking, stairs, pets, etc.</li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="pricing">
+              <AccordionTrigger>How does pricing work?</AccordionTrigger>
+              <AccordionContent>
+                Quotes are free with no call-out fee. Most jobs are quoted at a
+                fixed price so there are no surprises; longer or open-ended
+                work can be billed by the hour or half-day, agreed up front.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
