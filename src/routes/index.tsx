@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star } from "lucide-react";
 import { services } from "@/lib/services";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/")({
   component: Index,
