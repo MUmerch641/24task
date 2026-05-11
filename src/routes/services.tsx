@@ -21,7 +21,7 @@ function ServicesPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Our services</h1>
           <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
-            Nine reliable services covering most jobs around the house. Free quotes on everything.
+            Nine core trades under one local team — and if your job isn't listed, just ask. Free quotes on everything.
           </p>
         </div>
       </section>
@@ -37,7 +37,7 @@ function ServicesPage() {
                 className="scroll-mt-24 rounded-2xl border border-border/60 bg-card p-6 shadow-sm md:p-8"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
@@ -55,6 +55,23 @@ function ServicesPage() {
               </article>
             );
           })}
+          <article className="rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm md:p-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground font-bold">+</div>
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold">And more</h2>
+                <p className="mt-2 text-muted-foreground">
+                  Got a job that doesn't fit a tidy category? Drilling, jet-washing, fence repairs, gutter clears, TV mounting, lock changes — if it's around the home, ask us. If we can't do it, we'll point you to someone local who can.
+                </p>
+                <Link
+                  to="/contact"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+                >
+                  Ask about a custom job <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </div>

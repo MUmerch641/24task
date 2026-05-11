@@ -24,7 +24,7 @@ function Index() {
               <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Every job, <span className="text-primary">sorted.</span>
+              Every job, <span className="bg-accent px-2 py-0.5 text-accent-foreground">sorted.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
               From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
@@ -234,57 +234,82 @@ function Index() {
         <div className="mx-auto max-w-3xl px-4">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Frequently asked questions</h2>
           <p className="mt-2 text-muted-foreground">
-            The quick answers to what most people ask before booking.
+            Quick answers about 247 Task Fix and how we work.
           </p>
           <Accordion type="single" collapsible className="mt-8 w-full">
+            <AccordionItem value="services">
+              <AccordionTrigger>What jobs do you actually cover?</AccordionTrigger>
+              <AccordionContent>
+                Nine core services: gardening, painting, cleaning, house removals,
+                handyman jobs, carpet removal, carpet fitting, plumbing and man with
+                van. If your job isn't on the list, ask anyway — most home tasks fall
+                under one of our trades.
+              </AccordionContent>
+            </AccordionItem>
             <AccordionItem value="hours">
               <AccordionTrigger>Are you really available 24/7?</AccordionTrigger>
               <AccordionContent>
-                Yes — we cover routine bookings 8am–8pm every day, and out-of-hours
-                callouts for emergencies like leaks, lock-outs and urgent removals
-                round the clock. Nights and Sundays carry a small out-of-hours rate.
+                Yes. Routine bookings run 8am–8pm every day, and we take emergency
+                callouts (leaks, blockages, lock-outs, urgent removals) round the
+                clock. Nights and Sundays carry a small out-of-hours rate.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="turnaround">
               <AccordionTrigger>How quickly can you get the job done?</AccordionTrigger>
               <AccordionContent>
-                Most quotes go back within a few hours. Small jobs (handyman,
-                plumbing fixes, man with van) usually fit in the same week —
-                often within 48 hours. Larger work like full house removals,
-                room repaints or carpet fits is typically booked 1–2 weeks
-                ahead, depending on the season.
+                Most quotes go back the same day. Small jobs (handyman, plumbing
+                fixes, man with van) usually fit in the same week — often within 48
+                hours. Larger work like full house removals, repaints or carpet fits
+                is typically booked 1–2 weeks ahead.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="area">
               <AccordionTrigger>What area do you cover?</AccordionTrigger>
               <AccordionContent>
-                We cover the local town and surrounding villages within roughly
-                a 20-mile radius. House removals and man-with-van jobs can go
-                further afield — just let us know the pickup and drop-off
-                postcodes and we'll quote for travel.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="quote-info">
-              <AccordionTrigger>What should I include in a quote request?</AccordionTrigger>
-              <AccordionContent>
-                The more detail you can share, the more accurate the quote.
-                Helpful things to include:
-                <ul className="mt-3 list-disc space-y-1.5 pl-5">
-                  <li>Which service you need (or a short description of the job)</li>
-                  <li>Your postcode or rough location</li>
-                  <li>Rough size or scope (e.g. "two bedrooms", "small front lawn", "3-bed end-of-tenancy")</li>
-                  <li>Preferred dates or how soon you need it done</li>
-                  <li>A couple of photos if it helps show the work</li>
-                  <li>Access notes — parking, stairs, pets, etc.</li>
-                </ul>
+                The local town and surrounding villages within roughly a 20-mile
+                radius. Removals and man-with-van jobs go further afield — just send
+                pickup and drop-off postcodes and we'll quote for travel.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="pricing">
               <AccordionTrigger>How does pricing work?</AccordionTrigger>
               <AccordionContent>
-                Quotes are free with no call-out fee. Most jobs are quoted at a
-                fixed price so there are no surprises; longer or open-ended
-                work can be billed by the hour or half-day, agreed up front.
+                Free quotes, no call-out fees. Quick fix jobs are £39/hour
+                (1-hour minimum). Half day is £149 for up to four hours of stacked
+                jobs. Larger work is quoted as a fixed-price project after a free
+                survey. Materials at cost; waste removal included on half-day and
+                project work.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="insured">
+              <AccordionTrigger>Are you insured and vetted?</AccordionTrigger>
+              <AccordionContent>
+                Yes — fully insured with public liability cover on every job. Our
+                tradespeople are local, vetted, and the same person you book is the
+                one who turns up.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="payment">
+              <AccordionTrigger>How do I pay?</AccordionTrigger>
+              <AccordionContent>
+                Bank transfer or card, on completion. We send a clear invoice with
+                a breakdown of labour, materials and any extras agreed on the day.
+                No deposit needed for most jobs — projects over £500 take a small
+                booking deposit.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="quote-info">
+              <AccordionTrigger>What should I include in a quote request?</AccordionTrigger>
+              <AccordionContent>
+                The more detail, the more accurate the quote. Useful things to share:
+                <ul className="mt-3 list-disc space-y-1.5 pl-5">
+                  <li>Which service you need (or a short description of the job)</li>
+                  <li>Your postcode or rough location</li>
+                  <li>Rough size or scope (e.g. "two bedrooms", "small front lawn", "3-bed end-of-tenancy")</li>
+                  <li>How soon you need it — emergency, this week, flexible</li>
+                  <li>A couple of photos if it helps show the work</li>
+                  <li>Access notes — parking, stairs, pets, key safe, etc.</li>
+                </ul>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
