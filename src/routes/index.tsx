@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star } from "lucide-react";
+import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList } from "lucide-react";
 import { services } from "@/lib/services";
 import {
   Accordion,
@@ -24,10 +24,10 @@ function Index() {
               <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Reliable home services. <span className="text-primary">One call, every job done.</span>
+              Every job, <span className="text-primary">sorted.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              From gardening and painting to plumbing and removals — friendly, fairly-priced help for every job around your home.
+              From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -44,9 +44,10 @@ function Index() {
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" /> 9 services</span>
+              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> 24/7</span>
+              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9★</span>
               <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Fully insured</span>
-              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> Same-week slots</span>
-              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9/5 rated</span>
             </div>
           </div>
         </div>
@@ -58,7 +59,7 @@ function Index() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What we do</h2>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Nine services covering most jobs around the house — inside and out.
+              Nine core services covering most jobs around the house — and if it's not listed, just ask.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -86,6 +87,19 @@ function Index() {
               </Link>
             );
           })}
+          <Link
+            to="/contact"
+            className="group rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+              <MoreHorizontal className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-lg font-semibold">And more</h3>
+            <p className="mt-1.5 text-sm text-muted-foreground">If it's a job around the home, chances are we can do it. Just ask.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              Ask us <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
         </div>
       </section>
 
