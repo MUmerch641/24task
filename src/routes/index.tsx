@@ -144,6 +144,91 @@ function Index() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="bg-secondary/40 py-16 md:py-20">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Simple, fair pricing</h2>
+            <p className="mt-2 text-muted-foreground">No call-out fees. No surprises. Pay for the job, not the jargon.</p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: Wrench,
+                name: "Quick fix",
+                price: "£39",
+                unit: "/hr",
+                desc: "Small repairs, leaks, flat-pack, odd jobs around the home.",
+                features: ["1-hour minimum", "Tools & basic materials", "Fully insured"],
+              },
+              {
+                icon: Hourglass,
+                name: "Half day",
+                price: "£149",
+                unit: "/4 hrs",
+                desc: "Multiple small jobs, a room repaint touch-up, garden tidy.",
+                features: ["Up to 4 hours on-site", "Materials at cost", "Waste removed", "Fully insured"],
+                featured: true,
+              },
+              {
+                icon: ClipboardList,
+                name: "Full project",
+                price: "Custom",
+                unit: "quote",
+                desc: "Removals, full repaints, carpet fits, larger plumbing work.",
+                features: ["Free on-site survey", "Fixed-price quote", "Materials & waste included", "Fully insured"],
+              },
+            ].map((p) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.name}
+                  className={
+                    "rounded-2xl border bg-card p-6 shadow-sm md:p-8 " +
+                    (p.featured ? "border-primary shadow-md ring-1 ring-primary/20" : "border-border/60")
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-lg font-semibold">{p.name}</h3>
+                    {p.featured && (
+                      <span className="ml-auto rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-5 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold tracking-tight">{p.price}</span>
+                    <span className="text-sm text-muted-foreground">{p.unit}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+                  <ul className="mt-5 space-y-2 text-sm">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/contact"
+                    className={
+                      "mt-6 inline-flex w-full items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold transition-colors " +
+                      (p.featured
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "border border-input bg-background text-foreground hover:bg-accent")
+                    }
+                  >
+                    Get a quote
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="bg-secondary/40 py-16 md:py-20">
         <div className="mx-auto max-w-3xl px-4">
@@ -153,11 +238,11 @@ function Index() {
           </p>
           <Accordion type="single" collapsible className="mt-8 w-full">
             <AccordionItem value="hours">
-              <AccordionTrigger>What are your availability hours?</AccordionTrigger>
+              <AccordionTrigger>Are you really available 24/7?</AccordionTrigger>
               <AccordionContent>
-                We work Monday to Saturday, 8am–6pm, with evening slots available
-                on request. Sunday jobs can be arranged for emergencies (leaks,
-                lock-outs, urgent removals) at a small out-of-hours rate.
+                Yes — we cover routine bookings 8am–8pm every day, and out-of-hours
+                callouts for emergencies like leaks, lock-outs and urgent removals
+                round the clock. Nights and Sundays carry a small out-of-hours rate.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="turnaround">
