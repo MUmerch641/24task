@@ -296,8 +296,8 @@ function Index() {
         <div className="overflow-hidden rounded-3xl bg-primary px-8 py-12 text-primary-foreground shadow-lg md:px-14 md:py-16">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Got a job in mind?</h2>
-              <p className="mt-2 text-primary-foreground/85">Tell us what you need — we'll reply with a free quote.</p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">One number. Every job.</h2>
+              <p className="mt-2 text-primary-foreground/85">Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.</p>
             </div>
             <Link
               to="/contact"
