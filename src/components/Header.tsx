@@ -17,7 +17,7 @@ export function Header() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Hammer className="h-5 w-5" />
           </span>
-          <span className="text-lg">HomeHands</span>
+          <span className="text-lg">247 Task Fix</span>
         </Link>
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
