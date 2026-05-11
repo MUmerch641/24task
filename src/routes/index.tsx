@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star } from "lucide-react";
+import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList } from "lucide-react";
 import { services } from "@/lib/services";
 import {
   Accordion,
@@ -24,10 +24,10 @@ function Index() {
               <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Reliable home services. <span className="text-primary">One call, every job done.</span>
+              Every job, <span className="text-primary">sorted.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              From gardening and painting to plumbing and removals — friendly, fairly-priced help for every job around your home.
+              From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -44,9 +44,10 @@ function Index() {
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" /> 9 services</span>
+              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> 24/7</span>
+              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9★</span>
               <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Fully insured</span>
-              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> Same-week slots</span>
-              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9/5 rated</span>
             </div>
           </div>
         </div>
@@ -58,7 +59,7 @@ function Index() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What we do</h2>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Nine services covering most jobs around the house — inside and out.
+              Nine core services covering most jobs around the house — and if it's not listed, just ask.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -86,6 +87,19 @@ function Index() {
               </Link>
             );
           })}
+          <Link
+            to="/contact"
+            className="group rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+              <MoreHorizontal className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-lg font-semibold">And more</h3>
+            <p className="mt-1.5 text-sm text-muted-foreground">If it's a job around the home, chances are we can do it. Just ask.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              Ask us <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
         </div>
       </section>
 
@@ -130,6 +144,91 @@ function Index() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="bg-secondary/40 py-16 md:py-20">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Simple, fair pricing</h2>
+            <p className="mt-2 text-muted-foreground">No call-out fees. No surprises. Pay for the job, not the jargon.</p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: Wrench,
+                name: "Quick fix",
+                price: "£39",
+                unit: "/hr",
+                desc: "Small repairs, leaks, flat-pack, odd jobs around the home.",
+                features: ["1-hour minimum", "Tools & basic materials", "Fully insured"],
+              },
+              {
+                icon: Hourglass,
+                name: "Half day",
+                price: "£149",
+                unit: "/4 hrs",
+                desc: "Multiple small jobs, a room repaint touch-up, garden tidy.",
+                features: ["Up to 4 hours on-site", "Materials at cost", "Waste removed", "Fully insured"],
+                featured: true,
+              },
+              {
+                icon: ClipboardList,
+                name: "Full project",
+                price: "Custom",
+                unit: "quote",
+                desc: "Removals, full repaints, carpet fits, larger plumbing work.",
+                features: ["Free on-site survey", "Fixed-price quote", "Materials & waste included", "Fully insured"],
+              },
+            ].map((p) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.name}
+                  className={
+                    "rounded-2xl border bg-card p-6 shadow-sm md:p-8 " +
+                    (p.featured ? "border-primary shadow-md ring-1 ring-primary/20" : "border-border/60")
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-lg font-semibold">{p.name}</h3>
+                    {p.featured && (
+                      <span className="ml-auto rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-5 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold tracking-tight">{p.price}</span>
+                    <span className="text-sm text-muted-foreground">{p.unit}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+                  <ul className="mt-5 space-y-2 text-sm">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/contact"
+                    className={
+                      "mt-6 inline-flex w-full items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold transition-colors " +
+                      (p.featured
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "border border-input bg-background text-foreground hover:bg-accent")
+                    }
+                  >
+                    Get a quote
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="bg-secondary/40 py-16 md:py-20">
         <div className="mx-auto max-w-3xl px-4">
@@ -139,11 +238,11 @@ function Index() {
           </p>
           <Accordion type="single" collapsible className="mt-8 w-full">
             <AccordionItem value="hours">
-              <AccordionTrigger>What are your availability hours?</AccordionTrigger>
+              <AccordionTrigger>Are you really available 24/7?</AccordionTrigger>
               <AccordionContent>
-                We work Monday to Saturday, 8am–6pm, with evening slots available
-                on request. Sunday jobs can be arranged for emergencies (leaks,
-                lock-outs, urgent removals) at a small out-of-hours rate.
+                Yes — we cover routine bookings 8am–8pm every day, and out-of-hours
+                callouts for emergencies like leaks, lock-outs and urgent removals
+                round the clock. Nights and Sundays carry a small out-of-hours rate.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="turnaround">
@@ -197,8 +296,8 @@ function Index() {
         <div className="overflow-hidden rounded-3xl bg-primary px-8 py-12 text-primary-foreground shadow-lg md:px-14 md:py-16">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Got a job in mind?</h2>
-              <p className="mt-2 text-primary-foreground/85">Tell us what you need — we'll reply with a free quote.</p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">One number. Every job.</h2>
+              <p className="mt-2 text-primary-foreground/85">Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.</p>
             </div>
             <Link
               to="/contact"

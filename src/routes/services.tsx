@@ -5,9 +5,9 @@ import { services } from "@/lib/services";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — HomeHands" },
+      { title: "Services — 247 Task Fix" },
       { name: "description", content: "Gardening, painting, cleaning, removals, handyman jobs, carpet fitting, plumbing, man with van and more." },
-      { property: "og:title", content: "Services — HomeHands" },
+      { property: "og:title", content: "Services — 247 Task Fix" },
       { property: "og:description", content: "Every service we offer for your home, in one place." },
     ],
   }),

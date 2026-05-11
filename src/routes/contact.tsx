@@ -12,9 +12,9 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — HomeHands" },
-      { name: "description", content: "Get a free quote for any home service. We reply fast." },
-      { property: "og:title", content: "Contact — HomeHands" },
+      { title: "Contact — 247 Task Fix" },
+      { name: "description", content: "Get a free quote for any home service. We reply fast, 24/7." },
+      { property: "og:title", content: "Contact — 247 Task Fix" },
       { property: "og:description", content: "Tell us about your job and get a free quote." },
     ],
   }),
@@ -61,7 +61,7 @@ function ContactPage() {
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-3 md:py-20">
         <div className="space-y-6 md:col-span-1">
           <ContactRow icon={<Phone className="h-5 w-5" />} label="Call us" value="07000 000 000" />
-          <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@homehands.local" />
+          <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@247taskfix.local" />
           <ContactRow icon={<MapPin className="h-5 w-5" />} label="Service area" value="Across the local area" />
         </div>
 

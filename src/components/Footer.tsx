@@ -10,10 +10,10 @@ export function Footer() {
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Hammer className="h-5 w-5" />
             </span>
-            <span className="text-lg">HomeHands</span>
+            <span className="text-lg">247 Task Fix</span>
           </Link>
           <p className="mt-3 text-sm text-muted-foreground">
-            Reliable local home services. One call, every job done.
+            Every job, sorted. Local trades you can actually rely on — round the clock.
           </p>
         </div>
         <div>
@@ -28,12 +28,12 @@ export function Footer() {
           <h3 className="text-sm font-semibold">Get in touch</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> 07000 000 000</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@homehands.local</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@247taskfix.local</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} HomeHands. All rights reserved.
+        © {new Date().getFullYear()} 247 Task Fix. All rights reserved.
       </div>
     </footer>
   );
