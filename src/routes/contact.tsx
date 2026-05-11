@@ -1,9 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, MessageCircle, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { services } from "@/lib/services";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const searchSchema = z.object({
   service: z.string().optional(),
@@ -25,6 +30,7 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const { service: preselected } = Route.useSearch();
   const [submitting, setSubmitting] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +63,8 @@ function ContactPage() {
 
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-3 md:py-20">
         <div className="space-y-6 md:col-span-1">
-          <ContactRow icon={<Phone className="h-5 w-5" />} label="Call or text" value="07000 000 000" />
+          <ContactRow icon={<Phone className="h-5 w-5" />} label="Call us · 24/7" value="07000 000 000" />
+          <ContactRow icon={<MessageCircle className="h-5 w-5" />} label="WhatsApp" value="07000 000 000" />
           <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@247taskfix.local" />
           <ContactRow icon={<Clock className="h-5 w-5" />} label="Hours" value="Bookings 8am–8pm · Emergencies 24/7" />
           <ContactRow icon={<MapPin className="h-5 w-5" />} label="Service area" value="Town centre + 20-mile radius" />
@@ -106,25 +113,56 @@ function ContactPage() {
             </div>
           </div>
 
-          <div className="mt-5">
-            <label className="mb-1.5 block text-sm font-medium">Job size</label>
-            <div className="flex flex-wrap gap-2 text-sm">
-              {[
-                { v: "quick", l: "Quick fix (under 1 hr)" },
-                { v: "half-day", l: "Half day (up to 4 hrs)" },
-                { v: "project", l: "Full project / survey needed" },
-              ].map((o, i) => (
-                <label key={o.v} className="cursor-pointer rounded-md border border-input bg-background px-3 py-2 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:text-accent-foreground">
-                  <input
-                    type="radio"
-                    name="size"
-                    value={o.v}
-                    defaultChecked={i === 0}
-                    className="mr-2 accent-primary"
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Preferred date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
                   />
-                  {o.l}
-                </label>
-              ))}
+                </PopoverContent>
+              </Popover>
+              <input type="hidden" name="preferred_date" value={date ? date.toISOString() : ""} />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Job size</label>
+              <div className="flex flex-wrap gap-2 text-sm">
+                {[
+                  { v: "quick", l: "Quick fix" },
+                  { v: "half-day", l: "Half day" },
+                  { v: "project", l: "Full project" },
+                ].map((o, i) => (
+                  <label key={o.v} className="cursor-pointer rounded-md border border-input bg-background px-3 py-2 has-[:checked]:border-primary has-[:checked]:bg-secondary has-[:checked]:text-secondary-foreground">
+                    <input
+                      type="radio"
+                      name="size"
+                      value={o.v}
+                      defaultChecked={i === 0}
+                      className="mr-2 accent-primary"
+                    />
+                    {o.l}
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
 
