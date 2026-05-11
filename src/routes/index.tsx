@@ -24,7 +24,7 @@ function Index() {
               <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Every job, <span className="text-primary">sorted.</span>
+              Every job, <span className="bg-accent px-2 py-0.5 text-accent-foreground">sorted.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
               From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
