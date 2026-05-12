@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   Droplet,
   Package,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -82,5 +83,12 @@ export const services: Service[] = [
     short: "Single items or small loads, anywhere local.",
     long: "Furniture pickups, marketplace collections, small moves and tip runs. Helpful, on time, fairly priced.",
     icon: Package,
+  },
+  {
+    slug: "electrical",
+    name: "Electrical",
+    short: "Sockets, lights and small electrical jobs.",
+    long: "Socket and light fitting swaps, fuse-board fixes, extractor fans, smart-home installs and small rewires by qualified sparks.",
+    icon: Zap,
   },
 ];
