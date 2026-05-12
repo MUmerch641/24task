@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2, Droplet, PaintRoller, Sprout, Zap, Truck } from "lucide-react";
 import { services } from "@/lib/services";
+import heroHouse from "@/assets/hero-house.png";
 import {
   Accordion,
   AccordionContent,
