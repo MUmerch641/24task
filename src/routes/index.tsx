@@ -129,14 +129,14 @@ function Index() {
                 key={s.slug}
                 to="/services"
                 hash={s.slug}
-                className="group rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                className="card-aura group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold">{s.name}</h3>
+                <h3 className="mt-4 text-lg font-bold">{s.name}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{s.short}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5">
                   Learn more <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
@@ -144,14 +144,14 @@ function Index() {
           })}
           <Link
             to="/contact"
-            className="group rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md"
+            className="card-aura group relative overflow-hidden rounded-2xl border-2 border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
               <MoreHorizontal className="h-6 w-6" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold">And more</h3>
+            <h3 className="mt-4 text-lg font-bold">And more</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">If it's a job around the home, chances are we can do it. Just ask.</p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-opacity group-hover:opacity-100">
               Ask us <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
