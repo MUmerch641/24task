@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Hammer, Phone, Mail } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
+import { LogoMark } from "./Logo";
 
 export function Footer() {
   return (
@@ -7,8 +8,8 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
         <div>
           <Link to="/" className="flex items-center gap-2 font-semibold">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Hammer className="h-5 w-5" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-secondary">
+              <LogoMark className="h-6 w-6" />
             </span>
             <span className="text-lg">247 Task Fix</span>
           </Link>

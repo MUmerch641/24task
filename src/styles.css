@@ -145,3 +145,148 @@
     color: var(--color-foreground);
   }
 }
+
+/* ==== Bold trade animations & gradients (yellow / charcoal / orange) ==== */
+@layer utilities {
+  .bg-trade-gradient {
+    background-image: linear-gradient(
+      90deg,
+      var(--secondary) 0%,
+      var(--accent) 50%,
+      var(--secondary) 100%
+    );
+  }
+  .bg-aurora {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in oklab, var(--secondary) 55%, transparent), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 30%, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 50% 90%, color-mix(in oklab, var(--secondary) 35%, transparent), transparent 60%);
+    filter: blur(0px);
+  }
+  .conic-glow {
+    background: conic-gradient(
+      from 0deg,
+      var(--secondary),
+      var(--accent),
+      var(--primary),
+      var(--secondary)
+    );
+  }
+  .text-trade-gradient {
+    background-image: linear-gradient(
+      90deg,
+      var(--accent),
+      var(--secondary),
+      var(--accent)
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-pan 6s linear infinite;
+  }
+  .shimmer-cta {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .shimmer-cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      transparent 35%,
+      color-mix(in oklab, var(--secondary) 80%, transparent) 50%,
+      transparent 65%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    animation: shimmer 2.8s linear infinite;
+    pointer-events: none;
+  }
+  .glow-yellow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--secondary) 60%, transparent),
+      0 10px 40px -10px color-mix(in oklab, var(--secondary) 70%, transparent);
+  }
+  .glow-orange {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--accent) 60%, transparent),
+      0 10px 40px -10px color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+  .card-aura {
+    position: relative;
+  }
+  .card-aura::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--secondary), var(--accent));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .card-aura:hover::before {
+    opacity: 1;
+  }
+  .card-aura::after {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 0%, color-mix(in oklab, var(--secondary) 50%, transparent), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(20px);
+  }
+  .card-aura:hover::after {
+    opacity: 1;
+  }
+}
+
+@keyframes gradient-pan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes aurora-drift {
+  0%, 100% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.05); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes blob {
+  0%, 100% { border-radius: 42% 58% 56% 44% / 48% 42% 58% 52%; transform: translate(0,0) rotate(0deg); }
+  33% { border-radius: 60% 40% 36% 64% / 52% 60% 40% 48%; transform: translate(4%, -3%) rotate(8deg); }
+  66% { border-radius: 38% 62% 64% 36% / 60% 48% 52% 40%; transform: translate(-3%, 4%) rotate(-6deg); }
+}
+
+.animate-aurora { animation: aurora-drift 14s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 18s linear infinite; }
+.animate-float-y { animation: float-y 4s ease-in-out infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+.animate-blob { animation: blob 16s ease-in-out infinite; }
+

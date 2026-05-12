@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList } from "lucide-react";
+import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2 } from "lucide-react";
 import { services } from "@/lib/services";
 import {
   Accordion,
@@ -15,16 +15,30 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div>
-      {/* Hero */}
+      {/* Hero — animated aurora + conic glow ring */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-accent/40 via-background to-background" />
-        <div className="mx-auto max-w-6xl px-4 pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="absolute inset-0 -z-10 bg-aurora animate-aurora opacity-90" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background" />
+
+        {/* Conic glow ring (decorative) */}
+        <div className="pointer-events-none absolute -right-40 -top-40 hidden h-[520px] w-[520px] md:block">
+          <div className="absolute inset-0 rounded-full conic-glow opacity-30 blur-2xl animate-spin-slow" />
+          <div className="absolute inset-10 rounded-full conic-glow opacity-50 animate-spin-slow [animation-direction:reverse]" />
+          <div className="absolute inset-20 rounded-full bg-background" />
+          <div className="absolute inset-24 rounded-full border border-border/60" />
+        </div>
+
+        <div className="relative mx-auto max-w-6xl px-4 pt-16 pb-24 md:pt-24 md:pb-32">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-accent" /> Trusted local team · Free quotes · 24/7
             </span>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Every job, <span className="bg-accent px-2 py-0.5 text-accent-foreground">sorted.</span>
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Every job,{" "}
+              <span className="relative inline-block">
+                <span className="text-trade-gradient">sorted.</span>
+                <span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-trade-gradient opacity-70" />
+              </span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
               From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
@@ -32,22 +46,63 @@ function Index() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+                className="shimmer-cta glow-yellow inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
               >
                 Get a free quote <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                to="/services"
-                className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+              <a
+                href="tel:07000000000"
+                className="inline-flex items-center gap-2 rounded-md border-2 border-primary bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/50"
               >
-                See all services
-              </Link>
+                <Phone className="h-4 w-4 text-accent" /> Call 24/7
+              </a>
             </div>
-            <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" /> 9 services</span>
-              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> 24/7</span>
-              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9★</span>
-              <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Fully insured</span>
+
+            {/* Floating stat badges */}
+            <div className="mt-10 flex flex-wrap gap-3">
+              {[
+                { i: Wrench, l: "10 services", sub: "under one team" },
+                { i: Clock, l: "24/7", sub: "real humans" },
+                { i: Star, l: "4.9★", sub: "local reviews" },
+                { i: ShieldCheck, l: "Insured", sub: "every job" },
+              ].map((s, idx) => {
+                const Icon = s.i;
+                return (
+                  <div
+                    key={s.l}
+                    className="animate-float-y rounded-2xl border border-border/60 bg-card/90 px-4 py-3 shadow-md backdrop-blur"
+                    style={{ animationDelay: `${idx * 0.4}s` }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="leading-tight">
+                        <div className="text-sm font-bold">{s.l}</div>
+                        <div className="text-[11px] text-muted-foreground">{s.sub}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Marquee ticker */}
+        <div className="relative border-y border-border/60 bg-primary py-3 text-primary-foreground">
+          <div className="flex overflow-hidden whitespace-nowrap">
+            <div className="flex shrink-0 animate-marquee items-center gap-8 pr-8 text-sm font-semibold uppercase tracking-wider">
+              {[0, 1].map((dup) => (
+                <span key={dup} className="flex items-center gap-8">
+                  {services.map((s) => (
+                    <span key={`${dup}-${s.slug}`} className="flex items-center gap-3">
+                      <span className="text-secondary">★</span>
+                      <span>{s.name}</span>
+                    </span>
+                  ))}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -59,7 +114,7 @@ function Index() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What we do</h2>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Nine core services covering most jobs around the house — and if it's not listed, just ask.
+              Ten core services covering most jobs around the house — and if it's not listed, just ask.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -74,14 +129,14 @@ function Index() {
                 key={s.slug}
                 to="/services"
                 hash={s.slug}
-                className="group rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                className="card-aura group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold">{s.name}</h3>
+                <h3 className="mt-4 text-lg font-bold">{s.name}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{s.short}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5">
                   Learn more <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
@@ -89,14 +144,14 @@ function Index() {
           })}
           <Link
             to="/contact"
-            className="group rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md"
+            className="card-aura group relative overflow-hidden rounded-2xl border-2 border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-primary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
               <MoreHorizontal className="h-6 w-6" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold">And more</h3>
+            <h3 className="mt-4 text-lg font-bold">And more</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">If it's a job around the home, chances are we can do it. Just ask.</p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-opacity group-hover:opacity-100">
               Ask us <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>
@@ -316,17 +371,29 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — multi-blob */}
       <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="overflow-hidden rounded-3xl bg-primary px-8 py-12 text-primary-foreground shadow-lg md:px-14 md:py-16">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-14 text-primary-foreground shadow-2xl md:px-14 md:py-20">
+          {/* Animated blobs */}
+          <div className="pointer-events-none absolute -left-16 -top-16 h-72 w-72 animate-blob bg-secondary opacity-40 blur-2xl" />
+          <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 animate-blob bg-accent opacity-40 blur-2xl [animation-delay:-6s]" />
+          <div className="pointer-events-none absolute -bottom-24 left-1/3 h-72 w-72 animate-blob bg-secondary opacity-30 blur-2xl [animation-delay:-12s]" />
+
+          <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">One number. Every job.</h2>
-              <p className="mt-2 text-primary-foreground/85">Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.</p>
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur">
+                <CheckCircle2 className="h-3.5 w-3.5 text-secondary" /> One call. Every trade.
+              </span>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight md:text-5xl">
+                One number. <span className="text-trade-gradient">Every job.</span>
+              </h2>
+              <p className="mt-3 max-w-xl text-primary-foreground/85">
+                Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.
+              </p>
             </div>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 rounded-md bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-background/90"
+              className="shimmer-cta glow-yellow inline-flex items-center gap-2 rounded-md bg-secondary px-6 py-4 text-sm font-bold text-secondary-foreground shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-secondary/90"
             >
               Request a quote <ArrowRight className="h-4 w-4" />
             </Link>

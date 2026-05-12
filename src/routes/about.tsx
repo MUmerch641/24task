@@ -5,7 +5,7 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — 247 Task Fix" },
-      { name: "description", content: "247 Task Fix is your local home services team — gardening, painting, plumbing, removals, handyman jobs and more. Available 24/7." },
+      { name: "description", content: "247 Task Fix is your local home services team — 10 trades including gardening, painting, plumbing, electrical, removals, handyman jobs and more. Available 24/7." },
       { property: "og:title", content: "About — 247 Task Fix" },
       { property: "og:description", content: "Local trades you can rely on, round the clock. Meet the team behind 247 Task Fix." },
     ],

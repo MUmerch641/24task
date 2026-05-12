@@ -21,7 +21,7 @@ function ServicesPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Our services</h1>
           <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
-            Nine core trades under one local team — and if your job isn't listed, just ask. Free quotes on everything.
+            Ten core trades under one local team — and if your job isn't listed, just ask. Free quotes on everything.
           </p>
         </div>
       </section>
