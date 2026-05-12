@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2, Droplet, PaintRoller, Sprout, Zap, Truck } from "lucide-react";
 import { services } from "@/lib/services";
+import heroHouse from "@/assets/hero-house.png";
 import {
   Accordion,
   AccordionContent,
@@ -15,21 +16,14 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div>
-      {/* Hero — animated aurora + conic glow ring */}
+      {/* Hero — animated aurora + isometric "house in action" illustration */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-aurora animate-aurora opacity-90" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background" />
 
-        {/* Conic glow ring (decorative) */}
-        <div className="pointer-events-none absolute -right-40 -top-40 hidden h-[520px] w-[520px] md:block">
-          <div className="absolute inset-0 rounded-full conic-glow opacity-30 blur-2xl animate-spin-slow" />
-          <div className="absolute inset-10 rounded-full conic-glow opacity-50 animate-spin-slow [animation-direction:reverse]" />
-          <div className="absolute inset-20 rounded-full bg-background" />
-          <div className="absolute inset-24 rounded-full border border-border/60" />
-        </div>
-
-        <div className="relative mx-auto max-w-6xl px-4 pt-16 pb-24 md:pt-24 md:pb-32">
-          <div className="max-w-3xl">
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pt-12 pb-20 md:grid-cols-2 md:items-center md:pt-20 md:pb-28">
+          {/* Copy column */}
+          <div className="relative">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-accent" /> Trusted local team · Free quotes · 24/7
             </span>
@@ -41,7 +35,7 @@ function Index() {
               </span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
+              From a leaky tap at midnight to a full house repaint — one local team of plumbers, painters, electricians, gardeners and more. Fair prices, and we actually turn up.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -87,6 +81,29 @@ function Index() {
               })}
             </div>
           </div>
+
+          {/* Illustration column with floating service tags */}
+          <div className="relative">
+            {/* Soft conic glow behind illustration */}
+            <div className="pointer-events-none absolute inset-0 -z-10 mx-auto h-full w-full">
+              <div className="absolute inset-0 rounded-full conic-glow opacity-25 blur-3xl animate-spin-slow" />
+            </div>
+            <img
+              src={heroHouse}
+              alt="Cutaway illustration of a UK home with 247 Task Fix tradespeople: plumber, painter, cleaner, handyman, electrician, gardener and a yellow service van outside."
+              width={1024}
+              height={1024}
+              className="relative mx-auto w-full max-w-[560px] drop-shadow-xl"
+            />
+
+            {/* Floating service tags */}
+            <FloatingTag className="left-2 top-6" icon={Droplet} label="Plumbing" delay="0s" />
+            <FloatingTag className="right-0 top-16" icon={PaintRoller} label="Painting" delay="0.6s" />
+            <FloatingTag className="-left-2 top-1/2" icon={Sparkles} label="Cleaning" delay="1.2s" />
+            <FloatingTag className="right-2 top-[58%]" icon={Zap} label="Electrical" delay="1.8s" />
+            <FloatingTag className="left-6 bottom-8" icon={Sprout} label="Gardening" delay="2.4s" />
+            <FloatingTag className="right-4 bottom-2" icon={Truck} label="Removals" delay="3s" />
+          </div>
         </div>
 
         {/* Marquee ticker */}
@@ -129,22 +146,34 @@ function Index() {
                 key={s.slug}
                 to="/services"
                 hash={s.slug}
-                className="card-aura group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="card-aura group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
-                  <Icon className="h-6 w-6" />
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <img
+                    src={s.image}
+                    alt={`${s.name} — 247 Task Fix`}
+                    width={800}
+                    height={600}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground shadow-md">
+                    <Icon className="h-5 w-5" />
+                  </div>
                 </div>
-                <h3 className="mt-4 text-lg font-bold">{s.name}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">{s.short}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5">
-                  Learn more <ArrowRight className="h-3.5 w-3.5" />
-                </span>
+                <div className="flex-1 p-5">
+                  <h3 className="text-lg font-bold">{s.name}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{s.short}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5">
+                    Learn more <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
               </Link>
             );
           })}
           <Link
             to="/contact"
-            className="card-aura group relative overflow-hidden rounded-2xl border-2 border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+            className="card-aura group relative flex flex-col items-start justify-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground transition-transform group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
               <MoreHorizontal className="h-6 w-6" />
@@ -295,10 +324,10 @@ function Index() {
             <AccordionItem value="services">
               <AccordionTrigger>What jobs do you actually cover?</AccordionTrigger>
               <AccordionContent>
-                Nine core services: gardening, painting, cleaning, house removals,
-                handyman jobs, carpet removal, carpet fitting, plumbing and man with
-                van. If your job isn't on the list, ask anyway — most home tasks fall
-                under one of our trades.
+                Ten core services: gardening, painting, cleaning, plumbing,
+                electrical, handyman jobs, carpet removal, carpet fitting, house
+                removals and man with van. If your job isn't on the list, ask
+                anyway — most home tasks fall under one of our trades.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="hours">
@@ -400,6 +429,30 @@ function Index() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function FloatingTag({
+  className = "",
+  icon: Icon,
+  label,
+  delay = "0s",
+}: {
+  className?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  delay?: string;
+}) {
+  return (
+    <div
+      className={`absolute z-10 hidden animate-float-y items-center gap-2 rounded-full border border-border/60 bg-card/95 px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur md:inline-flex ${className}`}
+      style={{ animationDelay: delay }}
+    >
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+        <Icon className="h-3 w-3" />
+      </span>
+      {label}
     </div>
   );
 }
