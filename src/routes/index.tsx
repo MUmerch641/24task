@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList } from "lucide-react";
+import { ArrowRight, MessageSquareQuote, ShieldCheck, Clock, Star, MoreHorizontal, Wrench, Hourglass, ClipboardList, Phone, Sparkles, CheckCircle2 } from "lucide-react";
 import { services } from "@/lib/services";
 import {
   Accordion,
@@ -15,16 +15,30 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div>
-      {/* Hero */}
+      {/* Hero — animated aurora + conic glow ring */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-accent/40 via-background to-background" />
-        <div className="mx-auto max-w-6xl px-4 pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="absolute inset-0 -z-10 bg-aurora animate-aurora opacity-90" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background" />
+
+        {/* Conic glow ring (decorative) */}
+        <div className="pointer-events-none absolute -right-40 -top-40 hidden h-[520px] w-[520px] md:block">
+          <div className="absolute inset-0 rounded-full conic-glow opacity-30 blur-2xl animate-spin-slow" />
+          <div className="absolute inset-10 rounded-full conic-glow opacity-50 animate-spin-slow [animation-direction:reverse]" />
+          <div className="absolute inset-20 rounded-full bg-background" />
+          <div className="absolute inset-24 rounded-full border border-border/60" />
+        </div>
+
+        <div className="relative mx-auto max-w-6xl px-4 pt-16 pb-24 md:pt-24 md:pb-32">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Trusted local team · Free quotes
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-accent" /> Trusted local team · Free quotes · 24/7
             </span>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Every job, <span className="bg-accent px-2 py-0.5 text-accent-foreground">sorted.</span>
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Every job,{" "}
+              <span className="relative inline-block">
+                <span className="text-trade-gradient">sorted.</span>
+                <span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-trade-gradient opacity-70" />
+              </span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
               From a leaky tap at midnight to a full house repaint — one local team, fair prices, and we actually turn up.
@@ -32,22 +46,63 @@ function Index() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+                className="shimmer-cta glow-yellow inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
               >
                 Get a free quote <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                to="/services"
-                className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+              <a
+                href="tel:07000000000"
+                className="inline-flex items-center gap-2 rounded-md border-2 border-primary bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/50"
               >
-                See all services
-              </Link>
+                <Phone className="h-4 w-4 text-accent" /> Call 24/7
+              </a>
             </div>
-            <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" /> 9 services</span>
-              <span className="inline-flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> 24/7</span>
-              <span className="inline-flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> 4.9★</span>
-              <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Fully insured</span>
+
+            {/* Floating stat badges */}
+            <div className="mt-10 flex flex-wrap gap-3">
+              {[
+                { i: Wrench, l: "10 services", sub: "under one team" },
+                { i: Clock, l: "24/7", sub: "real humans" },
+                { i: Star, l: "4.9★", sub: "local reviews" },
+                { i: ShieldCheck, l: "Insured", sub: "every job" },
+              ].map((s, idx) => {
+                const Icon = s.i;
+                return (
+                  <div
+                    key={s.l}
+                    className="animate-float-y rounded-2xl border border-border/60 bg-card/90 px-4 py-3 shadow-md backdrop-blur"
+                    style={{ animationDelay: `${idx * 0.4}s` }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="leading-tight">
+                        <div className="text-sm font-bold">{s.l}</div>
+                        <div className="text-[11px] text-muted-foreground">{s.sub}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Marquee ticker */}
+        <div className="relative border-y border-border/60 bg-primary py-3 text-primary-foreground">
+          <div className="flex overflow-hidden whitespace-nowrap">
+            <div className="flex shrink-0 animate-marquee items-center gap-8 pr-8 text-sm font-semibold uppercase tracking-wider">
+              {[0, 1].map((dup) => (
+                <span key={dup} className="flex items-center gap-8">
+                  {services.map((s) => (
+                    <span key={`${dup}-${s.slug}`} className="flex items-center gap-3">
+                      <span className="text-secondary">★</span>
+                      <span>{s.name}</span>
+                    </span>
+                  ))}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -59,7 +114,7 @@ function Index() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What we do</h2>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Nine core services covering most jobs around the house — and if it's not listed, just ask.
+              Ten core services covering most jobs around the house — and if it's not listed, just ask.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
