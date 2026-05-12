@@ -6,7 +6,7 @@ export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Services — 247 Task Fix" },
-      { name: "description", content: "Gardening, painting, cleaning, removals, handyman jobs, carpet fitting, plumbing, man with van and more." },
+      { name: "description", content: "Ten local trades under one team: gardening, painting, cleaning, plumbing, electrical, handyman, carpet removal, carpet fitting, house removals and man with van." },
       { property: "og:title", content: "Services — 247 Task Fix" },
       { property: "og:description", content: "Every service we offer for your home, in one place." },
     ],
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/services")({
 function ServicesPage() {
   return (
     <div>
-      <section className="bg-accent/40">
+      <section className="bg-secondary/40">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Our services</h1>
           <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
@@ -34,30 +34,38 @@ function ServicesPage() {
               <article
                 key={s.slug}
                 id={s.slug}
-                className="scroll-mt-24 rounded-2xl border border-border/60 bg-card p-6 shadow-sm md:p-8"
+                className="card-aura group scroll-mt-24 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                  <img
+                    src={s.image}
+                    alt={`${s.name} job by 247 Task Fix`}
+                    width={800}
+                    height={600}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-secondary-foreground shadow-md">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold">{s.name}</h2>
-                    <p className="mt-2 text-muted-foreground">{s.long}</p>
-                    <Link
-                      to="/contact"
-                      search={{ service: s.slug }}
-                      className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
-                    >
-                      Request this service <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                </div>
+                <div className="p-6 md:p-8">
+                  <h2 className="text-xl font-semibold">{s.name}</h2>
+                  <p className="mt-2 text-muted-foreground">{s.long}</p>
+                  <Link
+                    to="/contact"
+                    search={{ service: s.slug }}
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
+                  >
+                    Request this service <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               </article>
             );
           })}
-          <article className="rounded-2xl border border-dashed border-border bg-card p-6 shadow-sm md:p-8">
+          <article className="rounded-2xl border-2 border-dashed border-border bg-card p-6 shadow-sm md:p-8">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground font-bold">+</div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground font-bold">+</div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold">And more</h2>
                 <p className="mt-2 text-muted-foreground">
@@ -65,7 +73,7 @@ function ServicesPage() {
                 </p>
                 <Link
                   to="/contact"
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline"
                 >
                   Ask about a custom job <ArrowRight className="h-4 w-4" />
                 </Link>
