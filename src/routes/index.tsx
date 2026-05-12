@@ -324,10 +324,10 @@ function Index() {
             <AccordionItem value="services">
               <AccordionTrigger>What jobs do you actually cover?</AccordionTrigger>
               <AccordionContent>
-                Nine core services: gardening, painting, cleaning, house removals,
-                handyman jobs, carpet removal, carpet fitting, plumbing and man with
-                van. If your job isn't on the list, ask anyway — most home tasks fall
-                under one of our trades.
+                Ten core services: gardening, painting, cleaning, plumbing,
+                electrical, handyman jobs, carpet removal, carpet fitting, house
+                removals and man with van. If your job isn't on the list, ask
+                anyway — most home tasks fall under one of our trades.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="hours">
@@ -429,6 +429,30 @@ function Index() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function FloatingTag({
+  className = "",
+  icon: Icon,
+  label,
+  delay = "0s",
+}: {
+  className?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  delay?: string;
+}) {
+  return (
+    <div
+      className={`absolute z-10 hidden animate-float-y items-center gap-2 rounded-full border border-border/60 bg-card/95 px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur md:inline-flex ${className}`}
+      style={{ animationDelay: delay }}
+    >
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+        <Icon className="h-3 w-3" />
+      </span>
+      {label}
     </div>
   );
 }
