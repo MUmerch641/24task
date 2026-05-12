@@ -371,17 +371,29 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — multi-blob */}
       <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="overflow-hidden rounded-3xl bg-primary px-8 py-12 text-primary-foreground shadow-lg md:px-14 md:py-16">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-14 text-primary-foreground shadow-2xl md:px-14 md:py-20">
+          {/* Animated blobs */}
+          <div className="pointer-events-none absolute -left-16 -top-16 h-72 w-72 animate-blob bg-secondary opacity-40 blur-2xl" />
+          <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 animate-blob bg-accent opacity-40 blur-2xl [animation-delay:-6s]" />
+          <div className="pointer-events-none absolute -bottom-24 left-1/3 h-72 w-72 animate-blob bg-secondary opacity-30 blur-2xl [animation-delay:-12s]" />
+
+          <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">One number. Every job.</h2>
-              <p className="mt-2 text-primary-foreground/85">Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.</p>
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur">
+                <CheckCircle2 className="h-3.5 w-3.5 text-secondary" /> One call. Every trade.
+              </span>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight md:text-5xl">
+                One number. <span className="text-trade-gradient">Every job.</span>
+              </h2>
+              <p className="mt-3 max-w-xl text-primary-foreground/85">
+                Tell us what's broken, blocked, overgrown or half-finished — we'll quote it free, 24/7.
+              </p>
             </div>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 rounded-md bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-background/90"
+              className="shimmer-cta glow-yellow inline-flex items-center gap-2 rounded-md bg-secondary px-6 py-4 text-sm font-bold text-secondary-foreground shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-secondary/90"
             >
               Request a quote <ArrowRight className="h-4 w-4" />
             </Link>
