@@ -118,10 +118,20 @@ function RootComponent() {
       <div className="relative flex min-h-screen flex-col">
         {/* Global ambient background — sits behind every page */}
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute inset-0 bg-trade-grid opacity-[0.35]" />
-          <div className="absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-secondary/30 blur-3xl animate-blob" />
-          <div className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-accent/25 blur-3xl animate-blob [animation-delay:-7s]" />
+          {/* Warm mesh wash */}
+          <div className="absolute inset-0 bg-trade-mesh opacity-60" />
+          {/* Charcoal grid */}
+          <div className="absolute inset-0 bg-trade-grid opacity-40" />
+          {/* Orange dot mesh */}
+          <div className="absolute inset-0 bg-trade-dots opacity-50" />
+          {/* Paper grain */}
+          <div className="absolute inset-0 bg-noise opacity-[0.05] mix-blend-multiply" />
+          {/* Drifting brand blobs */}
+          <div className="absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-secondary/25 blur-3xl animate-blob" />
+          <div className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-accent/20 blur-3xl animate-blob [animation-delay:-7s]" />
           <div className="absolute bottom-0 left-1/4 h-[22rem] w-[22rem] rounded-full bg-secondary/20 blur-3xl animate-blob [animation-delay:-13s]" />
+          {/* Vignette to keep text crisp */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,color-mix(in_oklab,var(--background)_85%,transparent)_100%)]" />
           <div className="absolute inset-x-0 top-0 h-px bg-trade-gradient opacity-60" />
         </div>
         <Header />
