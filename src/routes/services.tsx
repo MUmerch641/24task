@@ -5,9 +5,9 @@ import { services } from "@/lib/services";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — 247 Task Fix" },
+      { title: "Services — Task-Fix" },
       { name: "description", content: "Ten local trades under one team: gardening, painting, cleaning, plumbing, electrical, handyman, carpet removal, carpet fitting, house removals and man with van." },
-      { property: "og:title", content: "Services — 247 Task Fix" },
+      { property: "og:title", content: "Services — Task-Fix" },
       { property: "og:description", content: "Every service we offer for your home, in one place." },
     ],
   }),
@@ -39,7 +39,7 @@ function ServicesPage() {
                 <div className="relative aspect-[16/9] overflow-hidden bg-muted">
                   <img
                     src={s.image}
-                    alt={`${s.name} job by 247 Task Fix`}
+                    alt={`${s.name} job by Task-Fix`}
                     width={800}
                     height={600}
                     loading="lazy"

@@ -17,10 +17,10 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Get a free quote — 247 Task Fix" },
+      { title: "Get a free quote — Task-Fix" },
       { name: "description", content: "Tell us about the job. Free quote, usually same day. 24/7 emergencies covered." },
-      { property: "og:title", content: "Get a free quote — 247 Task Fix" },
-      { property: "og:description", content: "Quick fix, half day or full project — free quotes from your local 247 Task Fix team." },
+      { property: "og:title", content: "Get a free quote — Task-Fix" },
+      { property: "og:description", content: "Quick fix, half day or full project — free quotes from your local Task-Fix team." },
     ],
   }),
   validateSearch: searchSchema,

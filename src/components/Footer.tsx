@@ -11,7 +11,7 @@ export function Footer() {
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-secondary">
               <LogoMark className="h-6 w-6" />
             </span>
-            <span className="text-lg">247 Task Fix</span>
+            <span className="text-lg">Task-Fix</span>
           </Link>
           <p className="mt-3 text-sm text-muted-foreground">
             Every job, sorted. Local trades you can actually rely on — round the clock.
@@ -35,7 +35,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} 247 Task Fix. All rights reserved.
+        © {new Date().getFullYear()} Task-Fix. All rights reserved.
       </div>
     </footer>
   );
