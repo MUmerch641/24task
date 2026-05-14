@@ -65,7 +65,7 @@ function ContactPage() {
         <div className="space-y-6 md:col-span-1">
           <ContactRow icon={<Phone className="h-5 w-5" />} label="Call us · 24/7" value="07000 000 000" />
           <ContactRow icon={<MessageCircle className="h-5 w-5" />} label="WhatsApp" value="07000 000 000" />
-          <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@247taskfix.local" />
+          <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@task-fix.local" />
           <ContactRow icon={<Clock className="h-5 w-5" />} label="Hours" value="Bookings 8am–8pm · Emergencies 24/7" />
           <ContactRow icon={<MapPin className="h-5 w-5" />} label="Service area" value="Town centre + 20-mile radius" />
         </div>
