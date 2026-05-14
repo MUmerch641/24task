@@ -26,12 +26,12 @@ export function Header() {
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0">
             <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-secondary shadow-[0_0_8px_var(--secondary)]" />
             <span className="font-semibold text-secondary">24/7</span>
-            <span className="text-primary-foreground/85">emergency callouts</span>
+            <span className="text-primary-foreground/85">Emergency Callouts</span>
             <span className="text-accent">·</span>
             <span className="font-semibold text-secondary">Free</span>
-            <span className="text-primary-foreground/85">quotes</span>
+            <span className="text-primary-foreground/85">Quotes</span>
             <span className="text-accent">·</span>
-            <span className="font-semibold text-accent">Fully insured</span>
+            <span className="font-semibold text-accent">Fully Insured</span>
           </span>
           <a href="tel:07000000000" className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex">
             <Phone className="h-3 w-3" /> 07000 000 000
