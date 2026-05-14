@@ -46,7 +46,7 @@ export function Header() {
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-lg font-extrabold tracking-tight">
-              247 <span className="text-trade-gradient">Task Fix</span>
+              <span className="text-trade-gradient">Task-Fix</span>
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Every job, sorted

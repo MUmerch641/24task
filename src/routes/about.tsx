@@ -4,10 +4,10 @@ import { ShieldCheck, Clock, MapPin, ThumbsUp, ArrowRight, Hammer } from "lucide
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — 247 Task Fix" },
-      { name: "description", content: "247 Task Fix is your local home services team — 10 trades including gardening, painting, plumbing, electrical, removals, handyman jobs and more. Available 24/7." },
-      { property: "og:title", content: "About — 247 Task Fix" },
-      { property: "og:description", content: "Local trades you can rely on, round the clock. Meet the team behind 247 Task Fix." },
+      { title: "About — Task-Fix" },
+      { name: "description", content: "Task-Fix is your local home services team — 10 trades including gardening, painting, plumbing, electrical, removals, handyman jobs and more. Available 24/7." },
+      { property: "og:title", content: "About — Task-Fix" },
+      { property: "og:description", content: "Local trades you can rely on, round the clock. Meet the team behind Task-Fix." },
     ],
   }),
   component: AboutPage,
@@ -19,7 +19,7 @@ function AboutPage() {
       <section className="bg-accent/40">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-            <Hammer className="h-3.5 w-3.5 text-primary" /> About 247 Task Fix
+            <Hammer className="h-3.5 w-3.5 text-primary" /> About Task-Fix
           </span>
           <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
             One local team. Every job around the home.
@@ -35,7 +35,7 @@ function AboutPage() {
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Who we are</h2>
             <p className="mt-4 text-muted-foreground">
-              247 Task Fix started because finding a reliable handyman, plumber or gardener locally shouldn't be a lottery. We bring trades together under one roof so you only need to make one call — whatever the job.
+              Task-Fix started because finding a reliable handyman, plumber or gardener locally shouldn't be a lottery. We bring trades together under one roof so you only need to make one call — whatever the job.
             </p>
             <p className="mt-4 text-muted-foreground">
               Whether it's a quick fix, a half-day of odd jobs, or a full project like a house move or carpet fit, the same team you speak to is the team that shows up.

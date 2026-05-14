@@ -1,7 +1,7 @@
 type Props = { className?: string };
 
 /**
- * 247 Task Fix logo mark — wrench + house silhouette with a 24/7 chip.
+ * Task-Fix logo mark — wrench + house silhouette with a 24/7 chip.
  * Uses semantic theme tokens via currentColor + bg utilities on the wrapper.
  */
 export function LogoMark({ className }: Props) {

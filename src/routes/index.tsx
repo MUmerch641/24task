@@ -90,7 +90,7 @@ function Index() {
             </div>
             <img
               src={heroHouse}
-              alt="Cutaway illustration of a UK home with 247 Task Fix tradespeople: plumber, painter, cleaner, handyman, electrician, gardener and a yellow service van outside."
+              alt="Cutaway illustration of a UK home with Task-Fix tradespeople: plumber, painter, cleaner, handyman, electrician, gardener and a yellow service van outside."
               width={1024}
               height={1024}
               className="relative mx-auto w-full max-w-[560px] drop-shadow-xl"
@@ -151,7 +151,7 @@ function Index() {
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <img
                     src={s.image}
-                    alt={`${s.name} — 247 Task Fix`}
+                    alt={`${s.name} — Task-Fix`}
                     width={800}
                     height={600}
                     loading="lazy"
@@ -318,7 +318,7 @@ function Index() {
         <div className="mx-auto max-w-3xl px-4">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Frequently asked questions</h2>
           <p className="mt-2 text-muted-foreground">
-            Quick answers about 247 Task Fix and how we work.
+            Quick answers about Task-Fix and how we work.
           </p>
           <Accordion type="single" collapsible className="mt-8 w-full">
             <AccordionItem value="services">
