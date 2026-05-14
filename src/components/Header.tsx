@@ -20,13 +20,20 @@ export function Header() {
       </div>
 
       {/* Slim utility strip */}
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex h-8 max-w-6xl items-center justify-between px-4 text-[11px] font-medium">
-          <span className="flex items-center gap-2">
-            <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-secondary" />
-            24/7 emergency callouts · Free quotes · Fully insured
+      <div className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--secondary)_22%,transparent),transparent_35%,transparent_65%,color-mix(in_oklab,var(--accent)_25%,transparent))]" />
+        <div className="relative mx-auto flex h-8 max-w-6xl items-center justify-between px-4 text-[11px] font-medium">
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-0">
+            <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-secondary shadow-[0_0_8px_var(--secondary)]" />
+            <span className="font-semibold text-secondary">24/7</span>
+            <span className="text-primary-foreground/85">emergency callouts</span>
+            <span className="text-accent">·</span>
+            <span className="font-semibold text-secondary">Free</span>
+            <span className="text-primary-foreground/85">quotes</span>
+            <span className="text-accent">·</span>
+            <span className="font-semibold text-accent">Fully insured</span>
           </span>
-          <a href="tel:07000000000" className="hidden items-center gap-1.5 hover:text-secondary sm:inline-flex">
+          <a href="tel:07000000000" className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex">
             <Phone className="h-3 w-3" /> 07000 000 000
           </a>
         </div>
