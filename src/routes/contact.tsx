@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useState } from "react";
+import { Mail, MessageCircle, Clock, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, Clock, MessageCircle, CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { services } from "@/lib/services";
 import { z } from "zod";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { services } from "@/lib/services";
+import { supabase } from "@/lib/supabase";
 
 const searchSchema = z.object({
   service: z.string().optional(),
@@ -18,9 +14,15 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Get a free quote — Task-Fix" },
-      { name: "description", content: "Tell us about the job. Free quote, usually same day. 24/7 emergencies covered." },
+      {
+        name: "description",
+        content: "Tell us about the job. Free quote, usually same day. 24/7 emergencies covered.",
+      },
       { property: "og:title", content: "Get a free quote — Task-Fix" },
-      { property: "og:description", content: "Quick fix, half day or full project — free quotes from your local Task-Fix team." },
+      {
+        property: "og:description",
+        content: "Quick fix, half day or full project — free quotes from your local Task-Fix team.",
+      },
     ],
   }),
   validateSearch: searchSchema,
@@ -30,23 +32,112 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const { service: preselected } = Route.useSearch();
   const [submitting, setSubmitting] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onFilesChange(event: ChangeEvent<HTMLInputElement>) {
+    setSelectedFiles(Array.from(event.target.files ?? []));
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
-    const fd = new FormData(e.currentTarget);
-    const required = ["name", "phone", "postcode", "service", "message"];
-    for (const k of required) {
-      if (!String(fd.get(k) || "").trim()) {
-        toast.error("Please fill in all required fields.");
-        setSubmitting(false);
-        return;
-      }
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const name = String(fd.get("name") ?? "").trim();
+    const phone = String(fd.get("phone") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
+    const postcode = String(fd.get("postcode") ?? "").trim();
+    const service = String(fd.get("service") ?? "").trim();
+    const serviceDatetime = String(fd.get("service_datetime") ?? "").trim();
+    const description = String(fd.get("description") ?? "").trim();
+    const propertySize = String(fd.get("property_size") ?? "").trim();
+
+    if (!name || !phone || !email || !postcode || !service || !serviceDatetime || !description) {
+      toast.error("Please fill in all required fields.");
+      setSubmitting(false);
+      return;
     }
-    await new Promise((r) => setTimeout(r, 600));
-    toast.success("Thanks! We'll be in touch shortly with your free quote.");
-    (e.target as HTMLFormElement).reset();
+
+    if (selectedFiles.length > 3) {
+      toast.error("Please attach up to 3 pictures only.");
+      setSubmitting(false);
+      return;
+    }
+
+    const oversizedFile = selectedFiles.find((file) => file.size > 5 * 1024 * 1024);
+    if (oversizedFile) {
+      toast.error(`${oversizedFile.name} is too large. Keep each image under 5 MB.`);
+      setSubmitting(false);
+      return;
+    }
+
+    const photos = await Promise.all(
+      selectedFiles.map(async (file) => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+        const filePath = `contact-uploads/${fileName}`;
+
+        const { error: uploadError, data } = await supabase.storage
+          .from('contact_photos')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('contact_photos')
+          .getPublicUrl(filePath);
+
+        return {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: publicUrl,
+        };
+      }),
+    );
+
+    const insertResult = await supabase.from("contact_requests").insert({
+      name,
+      phone,
+      email: email || null,
+      postcode,
+      service,
+      service_datetime: new Date(serviceDatetime).toISOString(),
+      property_size: propertySize || null,
+      description,
+      photos,
+      status: "new",
+      source: "website-contact-form",
+      preferred_service_slug: preselected ?? null,
+    }).select().maybeSingle();
+
+    const { data: inserted, error } = insertResult as any;
+
+    if (error) {
+      toast.error(error.message);
+      setSubmitting(false);
+      return;
+    }
+
+    // fire server-side email job (best-effort)
+    try {
+      if (inserted?.id) {
+        await fetch("/api/send-contact-emails", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ id: inserted.id }),
+        });
+      }
+    } catch (err) {
+      console.error("email webhook failed", err);
+    }
+
+    toast.success("Thanks! We received your request and will get back to you soon.");
+    form.reset();
+    setSelectedFiles([]);
     setSubmitting(false);
   }
 
@@ -56,18 +147,39 @@ function ContactPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Get a free quote</h1>
           <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
-            Tell us about the job — we usually reply the same day. For emergencies (leaks, lock-outs, urgent removals), call us 24/7.
+            Tell us about the job — we usually reply the same day. For emergencies (leaks,
+            lock-outs, urgent removals), call us 24/7.
           </p>
         </div>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-3 md:py-20">
         <div className="space-y-6 md:col-span-1">
-          <ContactRow icon={<Phone className="h-5 w-5" />} label="Call us · 24/7" value="07000 000 000" />
-          <ContactRow icon={<MessageCircle className="h-5 w-5" />} label="WhatsApp" value="07000 000 000" />
-          <ContactRow icon={<Mail className="h-5 w-5" />} label="Email" value="hello@task-fix.local" />
-          <ContactRow icon={<Clock className="h-5 w-5" />} label="Hours" value="Bookings 8am–8pm · Emergencies 24/7" />
-          <ContactRow icon={<MapPin className="h-5 w-5" />} label="Service area" value="Town centre + 20-mile radius" />
+          <ContactRow
+            icon={<Phone className="h-5 w-5" />}
+            label="Call us · 24/7"
+            value="07000 000 000"
+          />
+          <ContactRow
+            icon={<MessageCircle className="h-5 w-5" />}
+            label="WhatsApp"
+            value="07000 000 000"
+          />
+          <ContactRow
+            icon={<Mail className="h-5 w-5" />}
+            label="Email"
+            value="hello@task-fix.local"
+          />
+          <ContactRow
+            icon={<Clock className="h-5 w-5" />}
+            label="Hours"
+            value="Bookings 8am–8pm · Emergencies 24/7"
+          />
+          <ContactRow
+            icon={<MapPin className="h-5 w-5" />}
+            label="Service area"
+            value="Town centre + 20-mile radius"
+          />
         </div>
 
         <form
@@ -76,9 +188,18 @@ function ContactPage() {
         >
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Your name" name="name" required />
-            <Field label="Phone" name="phone" type="tel" required />
-            <Field label="Email" name="email" type="email" />
-            <Field label="Postcode" name="postcode" required />
+            <Field label="Phone number" name="phone" type="tel" required />
+            <Field label="Email" name="email" type="email" placeholder="you@domain.com" required />
+            <Field
+              label="Postcode"
+              name="postcode"
+              required
+            />
+            <Field
+              label="Property size / room count"
+              name="property_size"
+              placeholder="e.g. 2-bed flat, 3 rooms, large garden"
+            />
           </div>
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
@@ -92,93 +213,55 @@ function ContactPage() {
               >
                 <option value="">Choose a service…</option>
                 {services.map((s) => (
-                  <option key={s.slug} value={s.slug}>{s.name}</option>
+                  <option key={s.slug} value={s.slug}>
+                    {s.name}
+                  </option>
                 ))}
                 <option value="other">Something else</option>
               </select>
             </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">When do you need it?</label>
-              <select
-                name="urgency"
-                defaultValue=""
-                className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">Pick a timeframe…</option>
-                <option value="emergency">Emergency — today</option>
-                <option value="this-week">This week</option>
-                <option value="next-week">Next week or two</option>
-                <option value="flexible">Flexible / get a quote first</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Preferred date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-              <input type="hidden" name="preferred_date" value={date ? date.toISOString() : ""} />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Job size</label>
-              <div className="flex flex-wrap gap-2 text-sm">
-                {[
-                  { v: "quick", l: "Quick fix" },
-                  { v: "half-day", l: "Half day" },
-                  { v: "project", l: "Full project" },
-                ].map((o, i) => (
-                  <label key={o.v} className="cursor-pointer rounded-md border border-input bg-background px-3 py-2 has-[:checked]:border-primary has-[:checked]:bg-secondary has-[:checked]:text-secondary-foreground">
-                    <input
-                      type="radio"
-                      name="size"
-                      value={o.v}
-                      defaultChecked={i === 0}
-                      className="mr-2 accent-primary"
-                    />
-                    {o.l}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <label className="mb-1.5 block text-sm font-medium">Tell us about the job *</label>
-            <textarea
-              name="message"
+            <Field
+              label="Service date & time *"
+              name="service_datetime"
+              type="datetime-local"
               required
-              rows={5}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="What needs doing, rough scope, any access notes (parking, stairs, pets). Photos help — feel free to email them after."
             />
           </div>
 
+          <div className="mt-5">
+            <label className="mb-1.5 block text-sm font-medium">Description of the job *</label>
+            <textarea
+              name="description"
+              required
+              rows={6}
+              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Tell us what needs doing, how many rooms or how large the area is, any access notes, and anything else we should know."
+            />
+          </div>
+
+          <div className="mt-5">
+            <label className="mb-1.5 block text-sm font-medium">Pictures</label>
+            <input
+              type="file"
+              name="pictures"
+              accept="image/*"
+              multiple
+              onChange={onFilesChange}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-2 file:text-sm file:font-medium file:text-secondary-foreground"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              You can attach up to 3 pictures. Each image should be under 5 MB.
+            </p>
+            {selectedFiles.length > 0 && (
+              <p className="mt-2 text-xs font-medium text-foreground">
+                {selectedFiles.length} file{selectedFiles.length > 1 ? "s" : ""} selected
+              </p>
+            )}
+          </div>
+
           <p className="mt-4 text-xs text-muted-foreground">
-            By sending this form you agree we can contact you about your quote. We never share your details.
+            By sending this form you agree we can contact you about your quote. We never share your
+            details.
           </p>
 
           <button
@@ -194,26 +277,61 @@ function ContactPage() {
   );
 }
 
-function Field({ label, name, type = "text", required }: { label: string; name: string; type?: string; required?: boolean }) {
+function Field({
+  label,
+  name,
+  type = "text",
+  required,
+  placeholder,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+}) {
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium">{label}{required && " *"}</label>
+      <label className="mb-1.5 block text-sm font-medium">
+        {label}
+        {required && " *"}
+      </label>
       <input
         name={name}
         type={type}
         required={required}
+        placeholder={placeholder}
         className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
       />
     </div>
   );
 }
 
-function ContactRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error(`Unable to read ${file.name}`));
+      }
+    };
+    reader.onerror = () => reject(reader.error ?? new Error(`Unable to read ${file.name}`));
+    reader.readAsDataURL(file);
+  });
+}
+
+function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">{icon}</div>
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+        {icon}
+      </div>
       <div>
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {label}
+        </div>
         <div className="mt-0.5 text-sm font-medium">{value}</div>
       </div>
     </div>

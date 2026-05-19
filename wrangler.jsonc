@@ -4,4 +4,15 @@
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
+  "env": {
+    "development": {
+      "vars": {
+        "SUPABASE_URL": "https://wbrvznulgpxbpftczupw.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicnZ6bnVsZ3B4YnBmdGN6dXB3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTE1OTYyNSwiZXhwIjoyMDk0NzM1NjI1fQ.r0SQOftElML_O6YP9veGmT_E_GZTUsk9wmjKgqtRRyU",
+        "RESEND_API_KEY": "re_Qyst5myg_86zaQyRJ5gXkipV9AWKKTr1d",
+        "RESEND_FROM_EMAIL": "onboarding@resend.dev",
+        "CONTACT_INBOXES": "247taskfix@gmail.com"
+      }
+    }
+  }
 }
