@@ -8,8 +8,8 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
         <div>
           <Link to="/" className="flex items-center gap-2 font-semibold">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-secondary">
-              <LogoMark className="h-6 w-6" />
+            <span className="overflow-hidden rounded-lg border border-border/60 bg-background shadow-sm">
+              <LogoMark className="h-9 w-9 object-cover" />
             </span>
             <span className="text-lg">Task-Fix</span>
           </Link>

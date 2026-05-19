@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import logoImage from "@/assets/logo.jpeg";
 
 function NotFoundComponent() {
   return (
@@ -75,15 +76,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Task-Fix — Local Handyman & Home Services" },
+      { title: "Task-Fix — 24/7 Home Services" },
       { name: "description", content: "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more. Free quotes, no call-out fee." },
       { name: "author", content: "Task-Fix" },
-      { property: "og:title", content: "Task-Fix — Local Handyman & Home Services" },
+      { property: "og:title", content: "Task-Fix — 24/7 Home Services" },
       { property: "og:description", content: "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:image", content: logoImage },
+      { name: "twitter:image", content: logoImage },
     ],
     links: [
+      {
+        rel: "icon",
+        href: logoImage,
+        type: "image/jpeg",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: logoImage,
+      },
       {
         rel: "stylesheet",
         href: appCss,

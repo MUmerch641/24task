@@ -41,15 +41,8 @@ export function Header() {
 
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="group flex items-center gap-3 font-semibold tracking-tight">
-          <span className="relative">
-            {/* Glow halo */}
-            <span className="absolute -inset-1 rounded-xl bg-trade-gradient opacity-70 blur-md transition-opacity group-hover:opacity-100" />
-            <span className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-secondary glow-yellow">
-              <LogoMark className="h-7 w-7" />
-              <span className="absolute -bottom-1 -right-1 rounded-md bg-secondary px-1 py-px text-[8px] font-extrabold leading-none text-secondary-foreground shadow">
-                24/7
-              </span>
-            </span>
+          <span className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-sm transition-transform group-hover:-translate-y-0.5">
+            <LogoMark className="h-12 w-12 object-cover" />
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-lg font-extrabold tracking-tight">
