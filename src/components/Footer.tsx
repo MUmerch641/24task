@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Mail } from "lucide-react";
 import { LogoMark } from "./Logo";
 
+
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-border/60 bg-secondary/40">
