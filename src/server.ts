@@ -220,7 +220,7 @@ export default {
                 <div style="background-color: #F8FAFC; padding: 20px; border-radius: 8px; margin-top: 24px; text-align: center;">
                   <p style="margin: 0; font-weight: bold; color: #0F172A;">Need urgent help?</p>
                   <p style="margin: 5px 0 0 0;">Call or WhatsApp us 24/7:</p>
-                  <p style="margin: 10px 0 0 0; font-size: 18px; color: #2563EB; font-weight: bold;">07000 000 000</p>
+                  <p style="margin: 10px 0 0 0; font-size: 18px; color: #2563EB; font-weight: bold;">07346 811790</p>
                 </div>
 
                 <p style="margin-top: 24px; font-size: 14px; color: #64748B;">

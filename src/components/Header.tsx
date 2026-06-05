@@ -33,8 +33,8 @@ export function Header() {
             <span className="text-accent">·</span>
             <span className="font-semibold text-accent">Fully Insured</span>
           </span>
-          <a href="tel:07000000000" className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex">
-            <Phone className="h-3 w-3" /> 07000 000 000
+          <a href="tel:07346811790" className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex">
+            <Phone className="h-3 w-3" /> 07346 811790
           </a>
         </div>
       </div>

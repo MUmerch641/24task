@@ -45,7 +45,7 @@ function Index() {
                 Get a free quote <ArrowRight className="h-4 w-4" />
               </Link>
               <a
-                href="tel:07000000000"
+                href="tel:07346811790"
                 className="inline-flex items-center gap-2 rounded-md border-2 border-primary bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/50"
               >
                 <Phone className="h-4 w-4 text-accent" /> Call 24/7

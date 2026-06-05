@@ -272,12 +272,12 @@ function ContactPage() {
           <ContactRow
             icon={<Phone className="h-5 w-5" />}
             label="Call us · 24/7"
-            value="07000 000 000"
+            value={<a href="tel:07346811790" className="hover:text-primary transition-colors">07346 811790</a>}
           />
           <ContactRow
             icon={<MessageCircle className="h-5 w-5" />}
             label="WhatsApp"
-            value="07000 000 000"
+            value={<a href="https://wa.me/447346811790" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">07346 811790</a>}
           />
           <ContactRow
             icon={<Mail className="h-5 w-5" />}
@@ -549,7 +549,7 @@ function ControlledField({
   );
 }
 
-function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <div className="flex items-start gap-3">
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
