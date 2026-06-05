@@ -31,7 +31,7 @@ export function Footer() {
           <h3 className="text-sm font-semibold">Get in touch</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> <a href="tel:07346811790" className="hover:text-foreground">07346 811790</a></li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@task-fix.local</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> <a href="mailto:info@taskfixltd.com" className="hover:text-foreground">info@taskfixltd.com</a></li>
           </ul>
         </div>
       </div>

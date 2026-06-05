@@ -282,7 +282,7 @@ function ContactPage() {
           <ContactRow
             icon={<Mail className="h-5 w-5" />}
             label="Email"
-            value="hello@task-fix.local"
+            value={<a href="mailto:info@taskfixltd.com" className="hover:text-primary transition-colors">info@taskfixltd.com</a>}
           />
           <ContactRow
             icon={<Clock className="h-5 w-5" />}
@@ -292,7 +292,7 @@ function ContactPage() {
           <ContactRow
             icon={<MapPin className="h-5 w-5" />}
             label="Service area"
-            value="Town centre + 20-mile radius"
+            value="Town centre + 100-mile radius"
           />
         </div>
 

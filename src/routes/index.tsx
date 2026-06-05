@@ -350,7 +350,7 @@ function Index() {
             <AccordionItem value="area">
               <AccordionTrigger>What area do you cover?</AccordionTrigger>
               <AccordionContent>
-                The local town and surrounding villages within roughly a 20-mile
+                The local town and surrounding villages within roughly a 100-mile
                 radius. Removals and man-with-van jobs go further afield — just send
                 pickup and drop-off postcodes and we'll quote for travel.
               </AccordionContent>

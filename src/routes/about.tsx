@@ -60,7 +60,7 @@ function AboutPage() {
             {[
               { i: Clock, t: "24/7 cover", d: "Routine bookings 8am–8pm. Emergencies any hour." },
               { i: ShieldCheck, t: "Fully insured", d: "Public liability cover on every job." },
-              { i: MapPin, t: "Local & nearby", d: "Town centre + a 20-mile radius. Further on request." },
+              { i: MapPin, t: "Local & nearby", d: "Town centre + a 100-mile radius. Further on request." },
               { i: ThumbsUp, t: "4.9★ rated", d: "Hundreds of happy local customers." },
             ].map((b) => {
               const Icon = b.i;
