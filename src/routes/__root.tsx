@@ -12,7 +12,7 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
-import logoImage from "@/assets/logo.jpeg";
+import logoImage from "@/assets/logo.png";
 
 function NotFoundComponent() {
   return (
@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "icon",
         href: logoImage,
-        type: "image/jpeg",
+        type: "image/png",
       },
       {
         rel: "apple-touch-icon",
