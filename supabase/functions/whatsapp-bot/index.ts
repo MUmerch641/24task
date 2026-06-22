@@ -7,10 +7,20 @@ const supabase = createClient(
 
 const SITE_URL = "https://taskfixltd.com";
 const PHONE_NUMBER = "07346 811790";
+const WHATSAPP_URL = "https://wa.me/447346811790";
+const GEMINI_GENERATE_CONTENT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
+const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash";
+const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
+const DEFAULT_OPENAI_MODEL = "gpt-5.5";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+};
+
+type WebChatMessage = {
+  role: "assistant" | "user";
+  content: string;
 };
 
 // ── Service definitions (mirrors the website) ──────────────────────────
@@ -79,6 +89,54 @@ const services = [
 
 // Number labels for the menu — supports up to 11 items
 const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "1️⃣1️⃣"];
+
+const WEBSITE_CONTEXT = [
+  "Task-Fix is a local UK home services team. Brand line: Every job, sorted.",
+  `Website: ${SITE_URL}`,
+  `Contact page for free quotes: ${SITE_URL}/contact`,
+  `Phone and WhatsApp: ${PHONE_NUMBER}`,
+  `WhatsApp link: ${WHATSAPP_URL}`,
+  "",
+  "Services:",
+  ...services.map((service) => `- ${service.name}: ${service.short}`),
+  "- Other / Not sure: customers can describe the job and Task-Fix will route it.",
+  "",
+  "Pricing and quote policy:",
+  "- Free quotes.",
+  "- No call-out fee.",
+  "- Quick fix jobs are from £39/hour with a 1-hour minimum.",
+  "- Half day is £149 for up to four hours of stacked jobs.",
+  "- Larger work is quoted as a fixed-price project.",
+  "- Materials are charged at cost where needed.",
+  "- Task-Fix is fully insured with public liability cover.",
+  "",
+  "Availability and area:",
+  "- Routine bookings run 8am-8pm every day.",
+  "- Emergency callouts are available 24/7.",
+  "- Task-Fix covers the local town, surrounding villages, and roughly a 100-mile radius.",
+  "- Removals and man-with-van work can go further by quote.",
+  "",
+  "Quote request details to collect:",
+  "- Service needed.",
+  "- Postcode or area.",
+  "- Preferred date/time and urgency.",
+  "- Short description of the job.",
+  "- Photos if helpful.",
+].join("\n");
+
+const AI_INSTRUCTIONS = [
+  "You are the Task-Fix AI assistant for the Task-Fix website.",
+  "Your job is to help website visitors with Task-Fix only: services, prices, quotes, availability, service area, website navigation, and contact details.",
+  "Use only the Task-Fix context below. If a fact is missing, say you are not sure and route the visitor to WhatsApp, phone, or the contact page.",
+  "If the visitor asks about anything unrelated to Task-Fix or this website, politely refuse and say you can only help with Task-Fix home services.",
+  "Do not claim that you booked an appointment, accepted payment, dispatched staff, edited the website, or changed any backend data.",
+  "When a visitor wants a quote, collect the useful details and point them to the contact page or WhatsApp.",
+  "Keep replies friendly, direct, and short: 2-5 lines for normal answers, max 8 lines for service lists.",
+  "Use chat-style plain text. Do not use Markdown headings, tables, horizontal rules, or code blocks.",
+  "If listing services, group them briefly instead of explaining every service unless the visitor asks for full details.",
+  "",
+  WEBSITE_CONTEXT,
+].join("\n");
 
 // ── Session helpers ────────────────────────────────────────────────────
 interface Session {
@@ -267,6 +325,34 @@ function hasAnyWord(body: string, words: string[]) {
   return words.some((word) => body.includes(word));
 }
 
+function shouldUseGuidedReply(rawBody: string) {
+  const body = rawBody.trim().toLowerCase();
+
+  if (
+    [
+      "menu",
+      "services",
+      "service",
+      "hi",
+      "hello",
+      "start",
+      "hey",
+      "help",
+      "quote",
+      "free quote",
+      "other",
+      "not sure",
+    ].includes(body)
+  ) {
+    return true;
+  }
+
+  if (/^(?:[1-9]|10|11)$/.test(body)) return true;
+
+  const serviceWordCount = body.split(/\s+/).filter(Boolean).length;
+  return serviceWordCount <= 3 && getServiceIndex(body) !== null;
+}
+
 async function buildReply(from: string, rawBody: string): Promise<string> {
   const body = rawBody.trim().toLowerCase();
 
@@ -339,6 +425,216 @@ function getWebSessionKey(value: unknown): string {
   return sanitized.startsWith("web:") ? sanitized : `web:${sanitized || fallback}`;
 }
 
+function normalizeWebHistory(value: unknown): WebChatMessage[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .flatMap((item): WebChatMessage[] => {
+      if (!item || typeof item !== "object") return [];
+
+      const record = item as Record<string, unknown>;
+      const role =
+        record.role === "assistant" ? "assistant" : record.role === "user" ? "user" : null;
+      const content = typeof record.content === "string" ? record.content.trim() : "";
+
+      if (!role || !content) return [];
+
+      return [{ role, content: content.slice(0, 1200) }];
+    })
+    .slice(-8);
+}
+
+function extractGeminiText(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const candidates = (payload as Record<string, unknown>).candidates;
+  if (!Array.isArray(candidates)) return null;
+
+  const chunks: string[] = [];
+
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== "object") continue;
+
+    const content = (candidate as Record<string, unknown>).content;
+    if (!content || typeof content !== "object") continue;
+
+    const parts = (content as Record<string, unknown>).parts;
+    if (!Array.isArray(parts)) continue;
+
+    for (const part of parts) {
+      if (!part || typeof part !== "object") continue;
+
+      const text = (part as Record<string, unknown>).text;
+      if (typeof text === "string" && text.trim()) {
+        chunks.push(text.trim());
+      }
+    }
+  }
+
+  return chunks.length ? chunks.join("\n").trim() : null;
+}
+
+function extractOpenAIText(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const response = payload as Record<string, unknown>;
+
+  if (typeof response.output_text === "string" && response.output_text.trim()) {
+    return response.output_text.trim();
+  }
+
+  const output = response.output;
+  if (!Array.isArray(output)) return null;
+
+  const chunks: string[] = [];
+
+  for (const item of output) {
+    if (!item || typeof item !== "object") continue;
+
+    const content = (item as Record<string, unknown>).content;
+    if (!Array.isArray(content)) continue;
+
+    for (const contentItem of content) {
+      if (!contentItem || typeof contentItem !== "object") continue;
+
+      const text = (contentItem as Record<string, unknown>).text;
+      if (typeof text === "string" && text.trim()) {
+        chunks.push(text.trim());
+      }
+    }
+  }
+
+  return chunks.length ? chunks.join("\n").trim() : null;
+}
+
+async function getGeminiReply(message: string, history: WebChatMessage[]): Promise<string | null> {
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!apiKey) return null;
+
+  const model = (Deno.env.get("GEMINI_MODEL") || DEFAULT_GEMINI_MODEL).replace(/^models\//, "");
+  const contents = [
+    ...history.map((item) => ({
+      role: item.role === "assistant" ? "model" : "user",
+      parts: [{ text: item.content }],
+    })),
+    {
+      role: "user",
+      parts: [{ text: message }],
+    },
+  ];
+
+  try {
+    const response = await fetch(
+      `${GEMINI_GENERATE_CONTENT_BASE_URL}/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: AI_INSTRUCTIONS }],
+          },
+          contents,
+          generationConfig: {
+            maxOutputTokens: 260,
+            temperature: 0.3,
+          },
+        }),
+      },
+    );
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const error =
+        payload && typeof payload === "object" ? (payload as Record<string, unknown>).error : null;
+      const errorMessage =
+        error && typeof error === "object" ? (error as Record<string, unknown>).message : null;
+
+      console.error(
+        `Gemini response failed: ${response.status}${
+          typeof errorMessage === "string" ? ` ${errorMessage}` : ""
+        }`,
+      );
+      return null;
+    }
+
+    return extractGeminiText(payload);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : "Gemini request failed.");
+    return null;
+  }
+}
+
+async function getOpenAIReply(message: string, history: WebChatMessage[]): Promise<string | null> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return null;
+
+  const model = Deno.env.get("OPENAI_MODEL") || DEFAULT_OPENAI_MODEL;
+  const input = [
+    ...history,
+    {
+      role: "user",
+      content: message,
+    },
+  ];
+
+  try {
+    const response = await fetch(OPENAI_RESPONSES_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        instructions: AI_INSTRUCTIONS,
+        input,
+        reasoning: { effort: "low" },
+        text: { verbosity: "low" },
+        max_output_tokens: 260,
+      }),
+    });
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const error =
+        payload && typeof payload === "object" ? (payload as Record<string, unknown>).error : null;
+      const errorMessage =
+        error && typeof error === "object" ? (error as Record<string, unknown>).message : null;
+
+      console.error(
+        `OpenAI response failed: ${response.status}${
+          typeof errorMessage === "string" ? ` ${errorMessage}` : ""
+        }`,
+      );
+      return null;
+    }
+
+    return extractOpenAIText(payload);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : "OpenAI request failed.");
+    return null;
+  }
+}
+
+async function getAiReply(message: string, history: WebChatMessage[]): Promise<string | null> {
+  const provider = (Deno.env.get("AI_PROVIDER") || "auto").toLowerCase();
+
+  if (provider === "gemini") {
+    return getGeminiReply(message, history);
+  }
+
+  if (provider === "openai") {
+    return getOpenAIReply(message, history);
+  }
+
+  return (await getGeminiReply(message, history)) ?? (await getOpenAIReply(message, history));
+}
+
 // ── TwiML response builder ────────────────────────────────────────────
 function twiml(message: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -368,12 +664,18 @@ Deno.serve(async (req) => {
       const payload = await req.json();
       const message = typeof payload?.message === "string" ? payload.message : "";
       const sessionKey = getWebSessionKey(payload?.sessionId);
+      const history = normalizeWebHistory(payload?.history);
 
       if (!message.trim()) {
         return jsonResponse({ error: "Message is required." }, 400);
       }
 
-      const reply = await buildReply(sessionKey, message);
+      if (shouldUseGuidedReply(message)) {
+        return jsonResponse({ reply: await buildReply(sessionKey, message) });
+      }
+
+      const reply =
+        (await getAiReply(message.trim(), history)) ?? (await buildReply(sessionKey, message));
       return jsonResponse({ reply });
     } catch (error) {
       return jsonResponse(

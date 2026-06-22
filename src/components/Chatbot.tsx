@@ -39,7 +39,8 @@ const initialMessages: ChatMessage[] = [
   {
     id: "welcome",
     role: "assistant",
-    content: "Hi, Task-Fix here. What can we help with today?",
+    content:
+      "Hi, I’m the Task-Fix assistant. Ask me about services, prices, availability, areas, or quotes.",
   },
 ];
 
@@ -119,8 +120,19 @@ function isJwtKey(value: string) {
   return value.split(".").length === 3;
 }
 
+function cleanMarkdownMarks(value: string) {
+  return value
+    .replace(/^#{1,6}\s*/, "")
+    .replace(/\*\*/g, "*")
+    .replace(/^\*+|\*+$/g, "")
+    .trim();
+}
+
 function renderInlineText(line: string) {
-  const parts = line.split(/(\*[^*]+\*|https?:\/\/[^\s]+)/g).filter(Boolean);
+  const cleanLine = line
+    .replace(/\*\*/g, "*")
+    .replace(/(^|\s)([A-Z][A-Za-z &/-]{2,40}):\*/g, "$1*$2:*");
+  const parts = cleanLine.split(/(\*[^*]+\*|https?:\/\/[^\s]+)/g).filter(Boolean);
 
   return parts.map((part, index) => {
     if (part.startsWith("http://") || part.startsWith("https://")) {
@@ -147,13 +159,44 @@ function renderInlineText(line: string) {
 
 function renderMessageText(content: string) {
   const lines = content.split("\n");
+  const elements: JSX.Element[] = [];
 
-  return lines.map((line, index) => (
-    <span key={`${line}-${index}`}>
-      {renderInlineText(line)}
-      {index < lines.length - 1 ? <br /> : null}
-    </span>
-  ));
+  lines.forEach((rawLine, index) => {
+    const trimmed = rawLine.trim();
+    if (!trimmed || /^-{3,}$/.test(trimmed)) return;
+
+    const isHeading = /^#{1,6}\s+/.test(trimmed);
+    const bullet = trimmed.match(/^[-*•]\s+(.+)$/);
+    const numbered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+    const line = cleanMarkdownMarks(bullet?.[1] ?? numbered?.[1] ?? trimmed);
+
+    if (!line) return;
+
+    const key = `${line}-${index}`;
+
+    if (bullet || numbered) {
+      elements.push(
+        <div key={key} className="mt-1.5 flex gap-2 first:mt-0">
+          <span className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-45" />
+          <span className="min-w-0">{renderInlineText(line)}</span>
+        </div>,
+      );
+      return;
+    }
+
+    elements.push(
+      <p
+        key={key}
+        className={
+          isHeading ? "mt-3 first:mt-0 text-[13px] font-bold leading-snug" : "mt-2 first:mt-0"
+        }
+      >
+        {renderInlineText(line)}
+      </p>,
+    );
+  });
+
+  return elements.length ? elements : <p>{renderInlineText(content)}</p>;
 }
 
 export function Chatbot() {
@@ -200,6 +243,9 @@ export function Chatbot() {
 
       const activeSessionId = sessionId || getStoredSessionId();
       if (!sessionId) setSessionId(activeSessionId);
+      const history = messages
+        .slice(-8)
+        .map((item) => ({ role: item.role, content: item.content }));
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -218,6 +264,7 @@ export function Chatbot() {
           body: JSON.stringify({
             message,
             sessionId: activeSessionId,
+            history,
           }),
         },
       );
@@ -280,7 +327,7 @@ export function Chatbot() {
                 <Bot className="h-5 w-5" />
               </span>
               <div className="min-w-0">
-                <h2 className="truncate text-sm font-bold">Task-Fix chat</h2>
+                <h2 className="truncate text-sm font-bold">Task-Fix assistant</h2>
                 <p className="truncate text-xs text-primary-foreground/75">24/7 home services</p>
               </div>
             </div>
@@ -303,10 +350,10 @@ export function Chatbot() {
                 >
                   <div
                     className={
-                      "max-w-[82%] rounded-xl px-3 py-2 text-sm leading-relaxed shadow-sm " +
+                      "break-words rounded-xl px-3 py-2 text-[13px] leading-5 shadow-sm " +
                       (message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-border/60 bg-card text-card-foreground")
+                        ? "max-w-[82%] bg-primary text-primary-foreground"
+                        : "max-w-[90%] border border-border/60 bg-card text-card-foreground")
                     }
                   >
                     {renderMessageText(message.content)}
