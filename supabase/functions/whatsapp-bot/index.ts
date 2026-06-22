@@ -133,6 +133,7 @@ const AI_INSTRUCTIONS = [
   "When a visitor wants a quote, collect the useful details and point them to the contact page or WhatsApp.",
   "Keep replies friendly, direct, and short: 2-5 lines for normal answers, max 8 lines for service lists.",
   "Use chat-style plain text. Do not use Markdown headings, tables, horizontal rules, or code blocks.",
+  "Do not use Markdown links. If sharing a link, write the plain URL.",
   "If listing services, group them briefly instead of explaining every service unless the visitor asks for full details.",
   "",
   WEBSITE_CONTEXT,

@@ -128,33 +128,77 @@ function cleanMarkdownMarks(value: string) {
     .trim();
 }
 
+function stripInlineMarkdown(value: string) {
+  return value.replace(/[*_`]/g, "");
+}
+
+function normalizeLinkHref(value: string) {
+  const cleanValue = value.trim().replace(/[.,;:]+$/, "");
+
+  if (/^(https?:|tel:|mailto:)/i.test(cleanValue)) {
+    return cleanValue;
+  }
+
+  return `https://${cleanValue.replace(/^\/+/, "")}`;
+}
+
+function renderLink(label: string, href: string, key: string) {
+  const cleanHref = normalizeLinkHref(href);
+
+  return (
+    <a
+      key={key}
+      href={cleanHref}
+      target={cleanHref.startsWith("http") ? "_blank" : undefined}
+      rel={cleanHref.startsWith("http") ? "noreferrer" : undefined}
+      className="break-words font-semibold text-accent underline underline-offset-2"
+    >
+      {stripInlineMarkdown(label).trim() || cleanHref.replace(/^https?:\/\//, "")}
+    </a>
+  );
+}
+
 function renderInlineText(line: string) {
   const cleanLine = line
     .replace(/\*\*/g, "*")
     .replace(/(^|\s)([A-Z][A-Za-z &/-]{2,40}):\*/g, "$1*$2:*");
-  const parts = cleanLine.split(/(\*[^*]+\*|https?:\/\/[^\s]+)/g).filter(Boolean);
+  const tokenPattern =
+    /(\[[^\]]+\]\((?:https?:\/\/|www\.|(?:[a-z0-9-]+\.)+[a-z]{2,})[^)\s]*\)|\*[^*]+\*|https?:\/\/[^\s)\]]+|www\.[^\s)\]]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s)\]]*)?)/gi;
+  const elements: JSX.Element[] = [];
+  let cursor = 0;
+  let match: RegExpExecArray | null;
 
-  return parts.map((part, index) => {
-    if (part.startsWith("http://") || part.startsWith("https://")) {
-      return (
-        <a
-          key={`${part}-${index}`}
-          href={part}
-          target="_blank"
-          rel="noreferrer"
-          className="break-all font-semibold text-accent underline underline-offset-2"
-        >
-          {part.replace(/^https?:\/\//, "")}
-        </a>
-      );
+  while ((match = tokenPattern.exec(cleanLine))) {
+    const [token] = match;
+
+    if (match.index > cursor) {
+      const text = stripInlineMarkdown(cleanLine.slice(cursor, match.index));
+      if (text) {
+        elements.push(<span key={`text-${cursor}`}>{text}</span>);
+      }
     }
 
-    if (part.startsWith("*") && part.endsWith("*")) {
-      return <strong key={`${part}-${index}`}>{part.slice(1, -1)}</strong>;
+    const markdownLink = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+
+    if (markdownLink) {
+      elements.push(renderLink(markdownLink[1], markdownLink[2], `link-${match.index}`));
+    } else if (token.startsWith("*") && token.endsWith("*")) {
+      elements.push(<strong key={`bold-${match.index}`}>{stripInlineMarkdown(token)}</strong>);
+    } else {
+      elements.push(renderLink(token.replace(/^https?:\/\//, ""), token, `link-${match.index}`));
     }
 
-    return <span key={`${part}-${index}`}>{part}</span>;
-  });
+    cursor = match.index + token.length;
+  }
+
+  if (cursor < cleanLine.length) {
+    const text = stripInlineMarkdown(cleanLine.slice(cursor));
+    if (text) {
+      elements.push(<span key={`text-${cursor}`}>{text}</span>);
+    }
+  }
+
+  return elements.length ? elements : <span>{stripInlineMarkdown(cleanLine)}</span>;
 }
 
 function renderMessageText(content: string) {
