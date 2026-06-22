@@ -45,7 +45,7 @@ const initialMessages: ChatMessage[] = [
 ];
 
 const quickActions = [
-  { label: "menu", message: "menu" },
+  { label: "Menu", message: "menu" },
   { label: "Free quote", message: "quote" },
   { label: "Plumbing", message: "plumbing" },
   { label: "Other", message: "other" },
