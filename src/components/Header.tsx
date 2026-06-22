@@ -13,10 +13,10 @@ export function Header() {
   ] as const;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 shadow-sm">
       {/* Vibrant gradient top bar */}
       <div className="relative h-1.5 w-full overflow-hidden bg-trade-gradient">
-        <div className="absolute inset-0 bg-trade-gradient opacity-80 [background-size:200%_100%] animate-[gradient-pan_5s_linear_infinite]" />
+        <div className="absolute inset-0 bg-trade-gradient opacity-80 [background-size:200%_100%]" />
       </div>
 
       {/* Slim utility strip */}
@@ -33,7 +33,10 @@ export function Header() {
             <span className="text-accent">·</span>
             <span className="font-semibold text-accent">Fully Insured</span>
           </span>
-          <a href="tel:07346811790" className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex">
+          <a
+            href="tel:07346811790"
+            className="hidden items-center gap-1.5 font-semibold text-secondary transition-colors hover:text-accent sm:inline-flex"
+          >
             <Phone className="h-3 w-3" /> 07346 811790
           </a>
         </div>
@@ -60,7 +63,10 @@ export function Header() {
               key={l.to}
               to={l.to}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground"
-              activeProps={{ className: "rounded-md px-3 py-2 text-sm font-semibold text-foreground bg-secondary/60" }}
+              activeProps={{
+                className:
+                  "rounded-md px-3 py-2 text-sm font-semibold text-foreground bg-secondary/60",
+              }}
             >
               {l.label}
             </Link>

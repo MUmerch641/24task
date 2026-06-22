@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Chatbot } from "@/components/Chatbot";
 import { Toaster } from "@/components/ui/sonner";
 import logoImage from "@/assets/logo.png";
 
@@ -77,10 +78,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Task-Fix — 24/7 Home Services" },
-      { name: "description", content: "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more. Free quotes, no call-out fee." },
+      {
+        name: "description",
+        content:
+          "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more. Free quotes, no call-out fee.",
+      },
       { name: "author", content: "Task-Fix" },
       { property: "og:title", content: "Task-Fix — 24/7 Home Services" },
-      { property: "og:description", content: "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more." },
+      {
+        property: "og:description",
+        content: "Gardening, painting, cleaning, removals, plumbing, handyman jobs and more.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { property: "og:image", content: logoImage },
@@ -127,9 +135,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative flex min-h-screen flex-col">
+      <div className="relative isolate flex min-h-screen flex-col">
         {/* Global ambient background — sits behind every page */}
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           {/* Warm mesh wash */}
           <div className="absolute inset-0 bg-trade-mesh opacity-60" />
           {/* Charcoal grid */}
@@ -139,9 +147,9 @@ function RootComponent() {
           {/* Paper grain */}
           <div className="absolute inset-0 bg-noise opacity-[0.05] mix-blend-multiply" />
           {/* Drifting brand blobs */}
-          <div className="absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-secondary/25 blur-3xl animate-blob" />
-          <div className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-accent/20 blur-3xl animate-blob [animation-delay:-7s]" />
-          <div className="absolute bottom-0 left-1/4 h-[22rem] w-[22rem] rounded-full bg-secondary/20 blur-3xl animate-blob [animation-delay:-13s]" />
+          <div className="absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-secondary/20 blur-3xl" />
+          <div className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-accent/15 blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 h-[22rem] w-[22rem] rounded-full bg-secondary/15 blur-3xl" />
           {/* Vignette to keep text crisp */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,color-mix(in_oklab,var(--background)_85%,transparent)_100%)]" />
           <div className="absolute inset-x-0 top-0 h-px bg-trade-gradient opacity-60" />
@@ -152,6 +160,7 @@ function RootComponent() {
         </main>
         <Footer />
       </div>
+      <Chatbot />
       <Toaster />
     </QueryClientProvider>
   );

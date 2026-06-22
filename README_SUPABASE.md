@@ -35,7 +35,17 @@ const { data, error } = await supabaseAdmin.from("secrets").select("*");
 
 Security note: only use the service role key on trusted servers (not in browser).
 
-4. Database table
+4. Chatbot
+
+The site includes a floating chatbot that calls the `whatsapp-bot` Edge Function at:
+
+```txt
+https://<project-ref>.supabase.co/functions/v1/whatsapp-bot
+```
+
+Deploy `supabase/functions/whatsapp-bot/index.ts` with `verify_jwt = false`. This is required because the same function receives unauthenticated Twilio webhook requests and browser chat requests using the publishable key in the `apikey` header.
+
+5. Database table
 
 Run [supabase-contact-schema.sql](supabase-contact-schema.sql) in the Supabase SQL editor to create or update the `contact_requests` table. If you already had the table, rerun the file so Supabase picks up the new `email` column and refreshes the schema cache.
 

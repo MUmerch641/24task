@@ -13,6 +13,7 @@ export function LogoMark({ className }: Props) {
       className={className}
       draggable={false}
       loading="eager"
+      decoding="async"
     />
   );
 }
