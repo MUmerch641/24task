@@ -359,10 +359,16 @@ export function Chatbot() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+    <div
+      className={
+        open
+          ? "fixed inset-x-2 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex flex-col sm:inset-x-auto sm:bottom-6 sm:right-6 sm:top-auto sm:block"
+          : "fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6"
+      }
+    >
       {open ? (
         <section
-          className="mb-3 flex h-[min(42rem,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-[24rem] flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-2xl"
+          className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-2xl sm:mb-3 sm:h-[min(42rem,calc(100dvh-7rem))] sm:w-[24rem] sm:max-w-[24rem] sm:flex-none"
           aria-label="Task-Fix chat"
         >
           <div className="flex items-center justify-between gap-3 border-b border-border/70 bg-primary px-4 py-3 text-primary-foreground">
@@ -456,7 +462,13 @@ export function Chatbot() {
         </section>
       ) : null}
 
-      <div className="flex items-center justify-end gap-2">
+      <div
+        className={
+          open
+            ? "hidden items-center justify-end gap-2 sm:flex"
+            : "flex items-center justify-end gap-2"
+        }
+      >
         {open ? (
           <a
             href="https://wa.me/447346811790"
