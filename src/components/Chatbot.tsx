@@ -51,6 +51,121 @@ const quickActions = [
   { label: "Other", message: "other" },
 ];
 
+const serviceOptions = [
+  {
+    slug: "gardening",
+    name: "Gardening",
+    short: "Lawns mowed, hedges trimmed, gardens tidied.",
+  },
+  {
+    slug: "painting",
+    name: "Painting",
+    short: "Interior and exterior painting, neat and tidy.",
+  },
+  {
+    slug: "cleaning",
+    name: "Cleaning",
+    short: "Deep cleans, end-of-tenancy, regular visits.",
+  },
+  {
+    slug: "plumbing",
+    name: "Plumbing",
+    short: "Leaks, taps, toilets and small installs.",
+  },
+  {
+    slug: "electrical",
+    name: "Electrical",
+    short: "Sockets, lights and small electrical jobs.",
+  },
+  {
+    slug: "handyman-jobs",
+    name: "Handyman Jobs",
+    short: "Odd jobs, repairs and small fixes around the home.",
+  },
+  {
+    slug: "carpet-removal",
+    name: "Carpet Removal",
+    short: "Old carpets pulled up and taken away.",
+  },
+  {
+    slug: "carpet-fitting",
+    name: "Carpet Fitting",
+    short: "Precise fitting for any room or stairs.",
+  },
+  {
+    slug: "house-removals",
+    name: "House Removals",
+    short: "Full house moves, carefully and on time.",
+  },
+  {
+    slug: "man-with-van",
+    name: "Man with Van",
+    short: "Single items or small loads, anywhere local.",
+  },
+];
+
+function getServiceMenuReply() {
+  return [
+    "Here is our service menu. Pick a number:",
+    "",
+    ...serviceOptions.map((service, index) => `${index + 1}. *${service.name}* - ${service.short}`),
+    "11. *Other / Not sure* - Tell us what needs doing.",
+    "",
+    "Type *quote* for a free quote.",
+  ].join("\n");
+}
+
+function getServiceReply(index: number) {
+  const service = serviceOptions[index];
+
+  return [
+    `*${service.name}*`,
+    service.short,
+    "",
+    "For a free quote, send us:",
+    "1. Postcode",
+    "2. Preferred date/time",
+    "3. Short job details",
+    "",
+    `Quote form: https://taskfixltd.com/contact?service=${service.slug}`,
+    "WhatsApp: https://wa.me/447346811790",
+  ].join("\n");
+}
+
+function getLocalServiceIndex(message: string) {
+  const normalized = message
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const numberChoice = parseInt(normalized, 10);
+
+  if (numberChoice >= 1 && numberChoice <= serviceOptions.length) {
+    return numberChoice - 1;
+  }
+
+  if (/\bcarpet\b/.test(normalized)) {
+    if (/\b(remov|remove|remova|removal|lift|pull|dispose|take away)\w*\b/.test(normalized)) {
+      return serviceOptions.findIndex((service) => service.slug === "carpet-removal");
+    }
+
+    if (/\b(fit|fitting|install|lay|stairs|underlay|gripper)\w*\b/.test(normalized)) {
+      return serviceOptions.findIndex((service) => service.slug === "carpet-fitting");
+    }
+  }
+
+  return serviceOptions.findIndex((service) => {
+    const serviceName = service.name.toLowerCase().replace(/&/g, "and");
+    const serviceWords = serviceName.split(/\s+/);
+
+    return (
+      normalized === service.slug.replace(/-/g, " ") ||
+      normalized.includes(serviceName) ||
+      serviceWords.some((word) => word.length > 4 && normalized.includes(word))
+    );
+  });
+}
+
 function getLocalReply(message: string) {
   const normalized = message.toLowerCase();
   const asksOwner = ["owner", "boss", "manager", "company name", "your name", "who are you"].some(
@@ -59,6 +174,35 @@ function getLocalReply(message: string) {
   const asksContact = ["number", "phone", "mobile", "call", "whatsapp", "contact"].some((word) =>
     normalized.includes(word),
   );
+
+  if (["menu", "services", "service", "hi", "hello", "start", "hey"].includes(normalized.trim())) {
+    return getServiceMenuReply();
+  }
+
+  if (["quote", "free quote"].includes(normalized.trim())) {
+    return [
+      "*Request a Free Quote*",
+      "Tell us what needs doing and we’ll get back to you, usually the same day.",
+      "",
+      "Quote form: https://taskfixltd.com/contact",
+      "WhatsApp: https://wa.me/447346811790",
+    ].join("\n");
+  }
+
+  if (["other", "not sure", "11"].includes(normalized.trim())) {
+    return [
+      "*Other / Not sure*",
+      "No problem. Tell us what needs doing and we’ll route it to the right trade.",
+      "",
+      "For a free quote, send your postcode, preferred time, and a short job description.",
+      "Quote form: https://taskfixltd.com/contact",
+    ].join("\n");
+  }
+
+  const serviceIndex = getLocalServiceIndex(message);
+  if (serviceIndex >= 0) {
+    return getServiceReply(serviceIndex);
+  }
 
   if (asksOwner) {
     return [
@@ -211,14 +355,26 @@ function renderMessageText(content: string) {
 
     const isHeading = /^#{1,6}\s+/.test(trimmed);
     const bullet = trimmed.match(/^[-*•]\s+(.+)$/);
-    const numbered = trimmed.match(/^\d+[.)]\s+(.+)$/);
-    const line = cleanMarkdownMarks(bullet?.[1] ?? numbered?.[1] ?? trimmed);
+    const numbered = trimmed.match(/^(\d+)[.)]\s+(.+)$/);
+    const line = cleanMarkdownMarks(bullet?.[1] ?? numbered?.[2] ?? trimmed);
 
     if (!line) return;
 
     const key = `${line}-${index}`;
 
-    if (bullet || numbered) {
+    if (numbered) {
+      elements.push(
+        <div key={key} className="mt-1.5 flex gap-2 first:mt-0">
+          <span className="w-5 shrink-0 text-right text-[12px] font-bold text-muted-foreground">
+            {numbered[1]}.
+          </span>
+          <span className="min-w-0">{renderInlineText(cleanMarkdownMarks(numbered[2]))}</span>
+        </div>,
+      );
+      return;
+    }
+
+    if (bullet) {
       elements.push(
         <div key={key} className="mt-1.5 flex gap-2 first:mt-0">
           <span className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-45" />

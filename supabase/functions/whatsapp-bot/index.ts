@@ -87,9 +87,6 @@ const services = [
   },
 ] as const;
 
-// Number labels for the menu — supports up to 11 items
-const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "1️⃣1️⃣"];
-
 const WEBSITE_CONTEXT = [
   "Task-Fix is a local UK home services team. Brand line: Every job, sorted.",
   `Website: ${SITE_URL}`,
@@ -134,6 +131,7 @@ const AI_INSTRUCTIONS = [
   "Keep replies friendly, direct, and short: 2-5 lines for normal answers, max 8 lines for service lists.",
   "Use chat-style plain text. Do not use Markdown headings, tables, horizontal rules, or code blocks.",
   "Do not use Markdown links. If sharing a link, write the plain URL.",
+  "When listing menu options, use numbered lines like 1. Gardening, 2. Painting. Do not use bullet dots for the service menu.",
   "If listing services, group them briefly instead of explaining every service unless the visitor asks for full details.",
   "",
   WEBSITE_CONTEXT,
@@ -172,8 +170,8 @@ function getWelcomeMessage(): string {
     ``,
     `What can we help with? Pick a number:`,
     ``,
-    ...services.map((s, i) => `${numberEmojis[i]} ${s.name} ${s.emoji}`),
-    `${numberEmojis[10]} Other / Not sure ❓`,
+    ...services.map((s, i) => `${i + 1}. ${s.name} ${s.emoji}`),
+    `11. Other / Not sure ❓`,
     ``,
     `Or type *quote* to request a free quote right now.`,
   ].join("\n");
@@ -304,6 +302,20 @@ function getServiceIndex(body: string): number | null {
     .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+  const normalizedWords = body
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+  if (/\bcarpet\b/.test(normalizedWords)) {
+    if (/\b(remov|remove|remova|removal|lift|pull|dispose|take away)\w*\b/.test(normalizedWords)) {
+      return services.findIndex((service) => service.slug === "carpet-removal");
+    }
+
+    if (/\b(fit|fitting|install|lay|stairs|underlay|gripper)\w*\b/.test(normalizedWords)) {
+      return services.findIndex((service) => service.slug === "carpet-fitting");
+    }
+  }
 
   const serviceIndex = services.findIndex((service) => {
     const normalizedName = service.name
@@ -315,7 +327,11 @@ function getServiceIndex(body: string): number | null {
     return (
       normalized === service.slug ||
       normalized === normalizedName ||
-      body.includes(service.name.toLowerCase())
+      body.includes(service.name.toLowerCase()) ||
+      service.name
+        .toLowerCase()
+        .split(/\s+/)
+        .some((word) => word.length > 4 && normalizedWords.includes(word))
     );
   });
 
@@ -350,8 +366,7 @@ function shouldUseGuidedReply(rawBody: string) {
 
   if (/^(?:[1-9]|10|11)$/.test(body)) return true;
 
-  const serviceWordCount = body.split(/\s+/).filter(Boolean).length;
-  return serviceWordCount <= 3 && getServiceIndex(body) !== null;
+  return getServiceIndex(body) !== null;
 }
 
 async function buildReply(from: string, rawBody: string): Promise<string> {
