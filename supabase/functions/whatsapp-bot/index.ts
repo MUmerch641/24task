@@ -8,10 +8,9 @@ const supabase = createClient(
 const SITE_URL = "https://taskfixltd.com";
 const PHONE_NUMBER = "07346 811790";
 const WHATSAPP_URL = "https://wa.me/447346811790";
-const GEMINI_GENERATE_CONTENT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash";
-const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
-const DEFAULT_OPENAI_MODEL = "gpt-5.5";
+const GROQ_CHAT_COMPLETIONS_URL = "https://api.groq.com/openai/v1/chat/completions";
+const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
+const MODEL_MAX_OUTPUT_TOKENS = 500;
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -21,6 +20,11 @@ const corsHeaders = {
 type WebChatMessage = {
   role: "assistant" | "user";
   content: string;
+};
+
+type AiReply = {
+  text: string;
+  incomplete: boolean;
 };
 
 // ── Service definitions (mirrors the website) ──────────────────────────
@@ -121,21 +125,152 @@ const WEBSITE_CONTEXT = [
   "- Photos if helpful.",
 ].join("\n");
 
+const KNOWLEDGE_CHUNKS = [
+  {
+    title: "Services",
+    keywords: [
+      "service",
+      "services",
+      "repair",
+      "fix",
+      "plumbing",
+      "electrical",
+      "painting",
+      "cleaning",
+      "garden",
+      "gardening",
+      "handyman",
+      "carpet",
+      "removal",
+      "removals",
+      "van",
+      "moving",
+    ],
+    content: services.map((service) => `${service.name}: ${service.short}`).join("\n"),
+  },
+  {
+    title: "Prices and Quotes",
+    keywords: ["quote", "qoute", "price", "prices", "cost", "charge", "charges", "pricing", "estimate", "pay"],
+    content: [
+      "Free quotes.",
+      "No call-out fee.",
+      "Quick fix jobs are from £39/hour with a 1-hour minimum.",
+      "Half day is £149 for up to four hours of stacked jobs.",
+      "Larger work is quoted as a fixed-price project.",
+      "Materials are charged at cost where needed.",
+      "For a quote, collect: service needed, postcode/area, preferred date/time, urgency, short job details, and photos if helpful.",
+    ].join("\n"),
+  },
+  {
+    title: "Availability and Service Area",
+    keywords: [
+      "available",
+      "availability",
+      "emergency",
+      "urgent",
+      "outside",
+      "area",
+      "region",
+      "radius",
+      "postcode",
+      "town",
+      "village",
+      "villages",
+      "far",
+      "distance",
+      "travel",
+      "double",
+    ],
+    content: [
+      "Routine bookings run 8am-8pm every day.",
+      "Emergency callouts are available 24/7.",
+      "Task-Fix covers the local town, surrounding villages, and roughly a 100-mile radius.",
+      "Removals and man-with-van work can go further by quote.",
+    ].join("\n"),
+  },
+  {
+    title: "Contact and Navigation",
+    keywords: ["contact", "phone", "call", "whatsapp", "number", "website", "form", "book", "booking"],
+    content: [
+      `Website: ${SITE_URL}`,
+      `Contact page: ${SITE_URL}/contact`,
+      `Phone: ${PHONE_NUMBER}`,
+      `WhatsApp: ${WHATSAPP_URL}`,
+      "The assistant can guide visitors to services, pricing, contact, and quote information, but cannot create confirmed bookings or take payment.",
+    ].join("\n"),
+  },
+  {
+    title: "Assistant Scope",
+    keywords: ["movie", "movies", "film", "watch", "music", "game", "joke", "date", "bye", "dumb", "hell", "ok"],
+    content: [
+      "The assistant is for Task-Fix website visitors.",
+      "If the user asks off-topic questions, answer briefly and naturally, then redirect to Task-Fix home services.",
+      "If the user says goodbye, respond politely and leave the door open.",
+      "If the user is rude or frustrated, stay calm and useful.",
+    ].join("\n"),
+  },
+];
+
+function tokenizeForRetrieval(value: string) {
+  return new Set(
+    value
+      .toLowerCase()
+      .replace(/[’']/g, "")
+      .replace(/[^a-z0-9£]+/g, " ")
+      .split(/\s+/)
+      .filter((word) => word.length > 2),
+  );
+}
+
+function retrieveWebsiteKnowledge(message: string, history: WebChatMessage[]) {
+  const recentText = history
+    .slice(-4)
+    .map((item) => item.content)
+    .join(" ");
+  const tokens = tokenizeForRetrieval(`${recentText} ${message}`);
+  const ranked = KNOWLEDGE_CHUNKS.map((chunk) => ({
+    chunk,
+    score: chunk.keywords.reduce((score, keyword) => score + (tokens.has(keyword) ? 1 : 0), 0),
+  }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  const selected = ranked.filter((item) => item.score > 0).map((item) => item.chunk);
+  const chunks = selected.length ? selected : KNOWLEDGE_CHUNKS.slice(0, 4);
+
+  return chunks.map((chunk) => `[${chunk.title}]\n${chunk.content}`).join("\n\n");
+}
+
 const AI_INSTRUCTIONS = [
   "You are the Task-Fix AI assistant for the Task-Fix website.",
+  "Sound like a capable modern AI assistant, not a scripted FAQ menu.",
   "Your job is to help website visitors with Task-Fix only: services, prices, quotes, availability, service area, website navigation, and contact details.",
-  "Use only the Task-Fix context below. If a fact is missing, say you are not sure and route the visitor to WhatsApp, phone, or the contact page.",
-  "If the visitor asks about anything unrelated to Task-Fix or this website, politely refuse and say you can only help with Task-Fix home services.",
+  "Use the retrieved Task-Fix knowledge below. If a fact is missing, say you are not sure and route the visitor to WhatsApp, phone, or the contact page.",
+  "If the visitor asks about anything unrelated to Task-Fix or this website, reply briefly in a human way, then say you can help with Task-Fix home services.",
   "Do not claim that you booked an appointment, accepted payment, dispatched staff, edited the website, or changed any backend data.",
   "When a visitor wants a quote, collect the useful details and point them to the contact page or WhatsApp.",
-  "Keep replies friendly, direct, and short: 2-5 lines for normal answers, max 8 lines for service lists.",
+  "If the visitor asks what you can do, briefly explain that you can help with Task-Fix services, prices, quotes, availability, service areas, navigation, and contact details.",
+  "If the visitor says goodbye, says they are leaving, or says they do not need the service, acknowledge politely and leave the door open.",
+  "If the visitor is rude or frustrated, stay calm, do not argue, and offer one useful next step.",
+  "If the visitor asks about areas outside the normal service region, explain the 100-mile local radius and that removals/man-with-van work can go further by quote.",
+  "Answer the user's actual message. Do not repeat the same generic fallback unless the message is genuinely unclear.",
+  "Keep replies friendly, direct, and short: 1-4 lines for normal answers, max 8 lines for service lists.",
   "Use chat-style plain text. Do not use Markdown headings, tables, horizontal rules, or code blocks.",
   "Do not use Markdown links. If sharing a link, write the plain URL.",
-  "When listing menu options, use numbered lines like 1. Gardening, 2. Painting. Do not use bullet dots for the service menu.",
+  "When listing services, use short numbered lines only if the visitor asks for a list or menu.",
   "If listing services, group them briefly instead of explaining every service unless the visitor asks for full details.",
   "",
+  "Base Task-Fix context:",
   WEBSITE_CONTEXT,
 ].join("\n");
+
+function buildWebAiInstructions(message: string, history: WebChatMessage[]) {
+  return [
+    AI_INSTRUCTIONS,
+    "",
+    "Retrieved Task-Fix knowledge for this message:",
+    retrieveWebsiteKnowledge(message, history),
+  ].join("\n");
+}
 
 // ── Session helpers ────────────────────────────────────────────────────
 interface Session {
@@ -342,33 +477,6 @@ function hasAnyWord(body: string, words: string[]) {
   return words.some((word) => body.includes(word));
 }
 
-function shouldUseGuidedReply(rawBody: string) {
-  const body = rawBody.trim().toLowerCase();
-
-  if (
-    [
-      "menu",
-      "services",
-      "service",
-      "hi",
-      "hello",
-      "start",
-      "hey",
-      "help",
-      "quote",
-      "free quote",
-      "other",
-      "not sure",
-    ].includes(body)
-  ) {
-    return true;
-  }
-
-  if (/^(?:[1-9]|10|11)$/.test(body)) return true;
-
-  return getServiceIndex(body) !== null;
-}
-
 async function buildReply(from: string, rawBody: string): Promise<string> {
   const body = rawBody.trim().toLowerCase();
 
@@ -433,14 +541,6 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-function getWebSessionKey(value: unknown): string {
-  const rawValue = typeof value === "string" ? value : "";
-  const sanitized = rawValue.replace(/[^a-zA-Z0-9:_-]/g, "").slice(0, 80);
-  const fallback = crypto.randomUUID();
-
-  return sanitized.startsWith("web:") ? sanitized : `web:${sanitized || fallback}`;
-}
-
 function normalizeWebHistory(value: unknown): WebChatMessage[] {
   if (!Array.isArray(value)) return [];
 
@@ -460,137 +560,143 @@ function normalizeWebHistory(value: unknown): WebChatMessage[] {
     .slice(-8);
 }
 
-function extractGeminiText(payload: unknown): string | null {
-  if (!payload || typeof payload !== "object") return null;
-
-  const candidates = (payload as Record<string, unknown>).candidates;
-  if (!Array.isArray(candidates)) return null;
-
-  const chunks: string[] = [];
-
-  for (const candidate of candidates) {
-    if (!candidate || typeof candidate !== "object") continue;
-
-    const content = (candidate as Record<string, unknown>).content;
-    if (!content || typeof content !== "object") continue;
-
-    const parts = (content as Record<string, unknown>).parts;
-    if (!Array.isArray(parts)) continue;
-
-    for (const part of parts) {
-      if (!part || typeof part !== "object") continue;
-
-      const text = (part as Record<string, unknown>).text;
-      if (typeof text === "string" && text.trim()) {
-        chunks.push(text.trim());
-      }
-    }
-  }
-
-  return chunks.length ? chunks.join("\n").trim() : null;
+function getLastWord(value: string) {
+  return value.toLowerCase().match(/[a-z]+$/)?.[0] ?? "";
 }
 
-function extractOpenAIText(payload: unknown): string | null {
-  if (!payload || typeof payload !== "object") return null;
+function looksIncompleteReply(value: string) {
+  const text = value.trim();
+  if (!text) return true;
 
-  const response = payload as Record<string, unknown>;
+  const lines = text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const lastLine = lines.at(-1) ?? text;
 
-  if (typeof response.output_text === "string" && response.output_text.trim()) {
-    return response.output_text.trim();
-  }
+  if (/https?:\/\/\S+$/i.test(lastLine) || /\b\d{5,}\b$/.test(lastLine)) return false;
+  if (/[.!?)]["']?$/.test(lastLine)) return false;
 
-  const output = response.output;
-  if (!Array.isArray(output)) return null;
+  const weakEndingWords = new Set([
+    "a",
+    "an",
+    "and",
+    "at",
+    "by",
+    "can",
+    "for",
+    "from",
+    "get",
+    "in",
+    "of",
+    "or",
+    "the",
+    "to",
+    "visiting",
+    "with",
+    "your",
+  ]);
+  const words = lastLine.split(/\s+/).filter(Boolean);
 
-  const chunks: string[] = [];
-
-  for (const item of output) {
-    if (!item || typeof item !== "object") continue;
-
-    const content = (item as Record<string, unknown>).content;
-    if (!Array.isArray(content)) continue;
-
-    for (const contentItem of content) {
-      if (!contentItem || typeof contentItem !== "object") continue;
-
-      const text = (contentItem as Record<string, unknown>).text;
-      if (typeof text === "string" && text.trim()) {
-        chunks.push(text.trim());
-      }
-    }
-  }
-
-  return chunks.length ? chunks.join("\n").trim() : null;
+  return words.length <= 12 || weakEndingWords.has(getLastWord(lastLine));
 }
 
-async function getGeminiReply(message: string, history: WebChatMessage[]): Promise<string | null> {
-  const apiKey = Deno.env.get("GEMINI_API_KEY");
-  if (!apiKey) return null;
+function buildCompletionRetryMessage(originalMessage: string, partialReply: string) {
+  return [
+    "Your previous answer was cut off before it finished.",
+    "Rewrite the full answer to the visitor's original message below.",
+    "Do not mention the cut-off. Do not continue mid-sentence. Return one complete answer.",
+    "End with a full sentence, phone number, or plain URL.",
+    "",
+    `Original visitor message: ${originalMessage}`,
+    "",
+    `Cut-off answer: ${partialReply}`,
+  ].join("\n");
+}
 
-  const model = (Deno.env.get("GEMINI_MODEL") || DEFAULT_GEMINI_MODEL).replace(/^models\//, "");
-  const contents = [
-    ...history.map((item) => ({
-      role: item.role === "assistant" ? "model" : "user",
-      parts: [{ text: item.content }],
-    })),
-    {
-      role: "user",
-      parts: [{ text: message }],
-    },
-  ];
+function getFallbackAiReply(_message: string) {
+  return [
+    "I'm having trouble reaching the AI assistant right now.",
+    `For Task-Fix help, send the job details, postcode, and preferred time here: ${SITE_URL}/contact`,
+    `You can also call or WhatsApp ${PHONE_NUMBER}.`,
+  ].join("\n");
+}
 
-  try {
-    const response = await fetch(
-      `${GEMINI_GENERATE_CONTENT_BASE_URL}/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: AI_INSTRUCTIONS }],
-          },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 260,
-            temperature: 0.3,
-          },
-        }),
-      },
-    );
+function finishIncompleteReply(partialReply: string, originalMessage: string) {
+  const text = partialReply.trim();
+  if (!text) return getFallbackAiReply(originalMessage);
 
-    const payload = await response.json().catch(() => null);
+  if (/\bget a$/i.test(text)) {
+    return `${text} free custom quote. Please share the job details, postcode, and preferred date/time.`;
+  }
 
-    if (!response.ok) {
-      const error =
-        payload && typeof payload === "object" ? (payload as Record<string, unknown>).error : null;
-      const errorMessage =
-        error && typeof error === "object" ? (error as Record<string, unknown>).message : null;
+  if (/\bcan$/i.test(text)) {
+    return `${text} use ${SITE_URL}/contact or WhatsApp ${WHATSAPP_URL}`;
+  }
 
-      console.error(
-        `Gemini response failed: ${response.status}${
-          typeof errorMessage === "string" ? ` ${errorMessage}` : ""
-        }`,
-      );
-      return null;
+  if (/\bvisiting$/i.test(text)) {
+    return `${text} ${SITE_URL}/contact.`;
+  }
+
+  if (/\b(?:to|for|with|by|at|from|your|the|a|an|and|or|of|in)$/i.test(text)) {
+    return `${text} us through ${SITE_URL}/contact.`;
+  }
+
+  return /[.!?)]["']?$/.test(text) ? text : `${text}.`;
+}
+
+function extractGroqReply(payload: unknown): AiReply | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const choices = (payload as Record<string, unknown>).choices;
+  if (!Array.isArray(choices)) return null;
+
+  const chunks: string[] = [];
+  let stoppedByLength = false;
+
+  for (const choice of choices) {
+    if (!choice || typeof choice !== "object") continue;
+
+    if ((choice as Record<string, unknown>).finish_reason === "length") {
+      stoppedByLength = true;
     }
 
-    return extractGeminiText(payload);
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : "Gemini request failed.");
+    const message = (choice as Record<string, unknown>).message;
+    if (!message || typeof message !== "object") continue;
+
+    const content = (message as Record<string, unknown>).content;
+    if (typeof content === "string" && content.trim()) {
+      chunks.push(content.trim());
+    }
+  }
+
+  const text = chunks.join("\n").trim();
+  if (!text) return null;
+
+  return { text, incomplete: stoppedByLength || looksIncompleteReply(text) };
+}
+
+async function getGroqReply(
+  message: string,
+  history: WebChatMessage[],
+  instructions: string,
+): Promise<AiReply | null> {
+  const apiKey = Deno.env.get("GROQ_API_KEY");
+  if (!apiKey) {
+    console.error("GROQ_API_KEY is missing; Groq cannot reply.");
     return null;
   }
-}
 
-async function getOpenAIReply(message: string, history: WebChatMessage[]): Promise<string | null> {
-  const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) return null;
-
-  const model = Deno.env.get("OPENAI_MODEL") || DEFAULT_OPENAI_MODEL;
-  const input = [
-    ...history,
+  const model = Deno.env.get("GROQ_MODEL") || DEFAULT_GROQ_MODEL;
+  const messages = [
+    {
+      role: "system",
+      content: instructions,
+    },
+    ...history.map((item) => ({
+      role: item.role,
+      content: item.content,
+    })),
     {
       role: "user",
       content: message,
@@ -598,7 +704,7 @@ async function getOpenAIReply(message: string, history: WebChatMessage[]): Promi
   ];
 
   try {
-    const response = await fetch(OPENAI_RESPONSES_URL, {
+    const response = await fetch(GROQ_CHAT_COMPLETIONS_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -606,49 +712,72 @@ async function getOpenAIReply(message: string, history: WebChatMessage[]): Promi
       },
       body: JSON.stringify({
         model,
-        instructions: AI_INSTRUCTIONS,
-        input,
-        reasoning: { effort: "low" },
-        text: { verbosity: "low" },
-        max_output_tokens: 260,
+        messages,
+        max_completion_tokens: MODEL_MAX_OUTPUT_TOKENS,
+        temperature: 0.3,
       }),
     });
 
     const payload = await response.json().catch(() => null);
 
     if (!response.ok) {
+      console.error("Groq API error payload:", JSON.stringify(payload));
+
       const error =
         payload && typeof payload === "object" ? (payload as Record<string, unknown>).error : null;
       const errorMessage =
         error && typeof error === "object" ? (error as Record<string, unknown>).message : null;
 
       console.error(
-        `OpenAI response failed: ${response.status}${
+        `Groq response failed: ${response.status}${
           typeof errorMessage === "string" ? ` ${errorMessage}` : ""
         }`,
       );
       return null;
     }
 
-    return extractOpenAIText(payload);
+    return extractGroqReply(payload);
   } catch (error) {
-    console.error(error instanceof Error ? error.message : "OpenAI request failed.");
+    console.error("Groq fetch threw:", error instanceof Error ? error.message : error);
     return null;
   }
 }
 
-async function getAiReply(message: string, history: WebChatMessage[]): Promise<string | null> {
-  const provider = (Deno.env.get("AI_PROVIDER") || "auto").toLowerCase();
+async function getAiReply(
+  message: string,
+  history: WebChatMessage[],
+  instructions: string,
+): Promise<AiReply | null> {
+  return getGroqReply(message, history, instructions);
+}
 
-  if (provider === "gemini") {
-    return getGeminiReply(message, history);
+async function getCompleteAiReply(message: string, history: WebChatMessage[]): Promise<string> {
+  const instructions = buildWebAiInstructions(message, history);
+  const firstReply = await getAiReply(message, history, instructions);
+  if (!firstReply) {
+    console.error("AI returned null, using local fallback.");
+    return getFallbackAiReply(message);
+  }
+  if (!firstReply.incomplete) return firstReply.text;
+
+  console.error(`AI reply looked incomplete: ${firstReply.text}`);
+
+  const retryReply = await getAiReply(
+    buildCompletionRetryMessage(message, firstReply.text),
+    history,
+    instructions,
+  );
+
+  if (retryReply && !retryReply.incomplete) {
+    return retryReply.text;
   }
 
-  if (provider === "openai") {
-    return getOpenAIReply(message, history);
+  if (retryReply?.text) {
+    console.error(`AI retry still looked incomplete: ${retryReply.text}`);
+    return finishIncompleteReply(retryReply.text, message);
   }
 
-  return (await getGeminiReply(message, history)) ?? (await getOpenAIReply(message, history));
+  return finishIncompleteReply(firstReply.text, message);
 }
 
 // ── TwiML response builder ────────────────────────────────────────────
@@ -679,19 +808,13 @@ Deno.serve(async (req) => {
     try {
       const payload = await req.json();
       const message = typeof payload?.message === "string" ? payload.message : "";
-      const sessionKey = getWebSessionKey(payload?.sessionId);
       const history = normalizeWebHistory(payload?.history);
 
       if (!message.trim()) {
         return jsonResponse({ error: "Message is required." }, 400);
       }
 
-      if (shouldUseGuidedReply(message)) {
-        return jsonResponse({ reply: await buildReply(sessionKey, message) });
-      }
-
-      const reply =
-        (await getAiReply(message.trim(), history)) ?? (await buildReply(sessionKey, message));
+      const reply = await getCompleteAiReply(message.trim(), history);
       return jsonResponse({ reply });
     } catch (error) {
       return jsonResponse(
