@@ -37,6 +37,13 @@ const CHAT_SESSION_KEY = "taskfix-chat-session-id";
 
 const initialMessages: ChatMessage[] = [];
 
+const quickActions = [
+  { label: "Menu", message: "Show me the Task-Fix service menu" },
+  { label: "Free quote", message: "I need a free quote" },
+  { label: "Plumbing", message: "I need help with plumbing" },
+  { label: "Other", message: "I need help with another job" },
+];
+
 function createId(prefix = "msg") {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return `${prefix}-${crypto.randomUUID()}`;
@@ -380,6 +387,20 @@ export function Chatbot() {
           </div>
 
           <div className="border-t border-border/70 bg-card p-3">
+            <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+              {quickActions.map((action) => (
+                <button
+                  key={action.label}
+                  type="button"
+                  disabled={sending}
+                  onClick={() => void sendMessage(action.message)}
+                  className="shrink-0 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/60 disabled:opacity-50"
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+
             <form onSubmit={onSubmit} className="flex items-center gap-2">
               <input
                 value={input}
