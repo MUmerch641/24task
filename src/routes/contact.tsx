@@ -4,7 +4,7 @@ import { Mail, MessageCircle, Clock, MapPin, Phone, X, ChevronRight, ChevronLeft
 import { toast } from "sonner";
 import { z } from "zod";
 import { services } from "@/lib/services";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 const searchSchema = z.object({
   service: z.string().optional(),
@@ -130,6 +130,7 @@ function ContactPage() {
     setSubmitting(true);
 
     try {
+      const supabase = getSupabase();
       const photos = await Promise.all(
         selectedFiles.map(async (file) => {
           const fileExt = file.name.split('.').pop();
